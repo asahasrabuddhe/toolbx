@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use App\ToolbxAPI;
+
+class ProductController extends Controller
+{
+    protected $toolbxAPI;
+    
+    public function __construct()
+    {
+        $this->toolbxAPI = new ToolbxAPI;
+    }
+
+    public function getAllProducts(Request $request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $categoryId = $request->get('categoryId');
+        $subCategoryId = $request->get('subCategoryId');
+
+        $total = DB::table('tbl_product')->where( 'display', 'Y')->count();
+
+        if( $categoryId == 0 )
+        {
+        	$filtered = $total;
+        	$products = DB::table('tbl_product')
+                        ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
+                        ->offset($start)->limit($length)                            
+                        ->where( 'display','Y')
+                        ->orderBy('ProductId', 'DESC')->get();
+        }
+        else if ( $subCategoryId == 0 )
+        {
+        	$filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->count();
+        	$products = DB::table('tbl_product')
+                        ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
+                        ->offset($start)->limit($length)                            
+                        ->where( 'display','Y')
+                        ->where('CategoryId', $categoryId)
+                        ->orderBy('ProductId', 'DESC')->get();
+        }
+        else
+        {
+        	$filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('SubCategoryId', $subCategoryId)->count();
+        	$products = DB::table('tbl_product')
+                        ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
+                        ->offset($start)->limit($length)                            
+                        ->where( 'display','Y')
+                        ->where('CategoryId', $categoryId)
+                        ->where('SubCategoryId', $subCategoryId)
+                        ->orderBy('ProductId', 'DESC')->get();
+        }
+        
+        $data = [
+            'draw' => $draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $products->toArray()
+        ];
+
+        return response()->json($data);
+    }
+
+    public function addProduct(Request $request)
+    {
+        $category = $request->get('category');
+        $subCategory = $request->get('subcategory');
+        $productName = $request->get('productname');
+        $descripton = $request->get('description');
+        $productImage = $request->get('productimage');
+        $price = $request->get('price');
+        $createdBy = Session::get('user_data')->admin_id;
+
+        $response = $this->toolbxAPI->post('product/addproduct', '', [
+            'Category' => $category,
+            'SubCategory' => $subCategory,
+            'ProductName' => $productName,
+            'Description' => $descripton,
+            'Image' => $productImage,
+            'Price' => $price,
+            'CreatedBy' => $createdBy,
+        ]);
+
+        return response()->json($response);
+
+    }
+}
