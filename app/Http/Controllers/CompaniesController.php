@@ -23,14 +23,28 @@ class CompaniesController extends Controller
         $draw = $request->get('draw');
         $start = $request->get('start');
         $length = $request->get('length');
+        $search = $request->get('search');
 
-        $total = DB::table('tbl_companies')->where( 'display', 'Y')->count();
+        if( isset($search['value']) && !empty($search['value'])) {
+            $total = DB::table('tbl_companies')
+                        ->where( 'display', 'Y')
+                        ->where('CompanyName', 'like', '%' . $search['value'] . '%')->count();
 
-        $runners = DB::table('tbl_companies')
+            $runners = DB::table('tbl_companies')
+                        ->select('CompanyId', 'CompanyName')
+                        ->offset($start)->limit($length)                            
+                        ->where( 'display','Y')
+                        ->where('CompanyName', 'like', '%' . $search['value'] . '%')
+                        ->orderBy('CompanyId', 'DESC')->get();
+        } else {
+            $total = DB::table('tbl_companies')->where( 'display', 'Y')->count();
+
+            $runners = DB::table('tbl_companies')
                         ->select('CompanyId', 'CompanyName')
                         ->offset($start)->limit($length)                            
                         ->where( 'display','Y')
                         ->orderBy('CompanyId', 'DESC')->get();
+        }
         
         $data = [
             'draw' => $draw,

@@ -22,15 +22,31 @@ class RunnerController extends Controller
         $draw = $request->get('draw');
         $start = $request->get('start');
         $length = $request->get('length');
+        $search = $request->get('search');
 
-        $total = DB::table('tbl_registration')->where('RegsitrationRoleId', 3)->where( 'IsDeleted', 'N')->count();
+        if( isset($search['value']) && !empty($search['value'])) {
+            $total = DB::table('tbl_registration')
+                        ->where('RegsitrationRoleId', 3)
+                        ->where( 'IsDeleted', 'N')
+                        ->where('RegistrationName', 'like', '%' . $search['value'] . '%')->count();
 
-        $runners = DB::table('tbl_registration')
+            $runners = DB::table('tbl_registration')
+                        ->select('RegistrationId', 'RegistrationName', 'RegistrationEmail', 'RegistrationPhoneNo')
+                        ->offset($start)->limit($length)
+                        ->where('RegsitrationRoleId', 3)
+                        ->where( 'IsDeleted','N')
+                        ->where('RegistrationName', 'like', '%' . $search['value'] . '%')
+                        ->orderBy('RegistrationId', 'DESC')->get();
+        } else {
+            $total = DB::table('tbl_registration')->where('RegsitrationRoleId', 3)->where( 'IsDeleted', 'N')->count();
+
+            $runners = DB::table('tbl_registration')
                         ->select('RegistrationId', 'RegistrationName', 'RegistrationEmail', 'RegistrationPhoneNo')
                         ->offset($start)->limit($length)
                         ->where('RegsitrationRoleId', 3)
                         ->where( 'IsDeleted','N')
                         ->orderBy('RegistrationId', 'DESC')->get();
+        }
         
         $data = [
             'draw' => $draw,

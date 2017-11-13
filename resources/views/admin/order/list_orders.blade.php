@@ -90,6 +90,7 @@
     <script>
         $(document).ready(function(){
             var tblOrders = $('#users').DataTable({
+                'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'ajax': {

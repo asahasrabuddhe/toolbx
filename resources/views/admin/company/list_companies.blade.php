@@ -95,19 +95,25 @@
                         'data': 'CompanyId',
                         'render': function( data, type, row, meta ) {
                             return '<a href="/admin/company/' + data + '/view"><img src="{{ asset('images/view.png') }}" width="20" height="17"></a>';
-                        }
+                        },
+                        'orderable': false,
+                        'searchable': false
                     },
                     {
                         'data': 'CompanyId',
                         'render': function( data, type, row, meta ) {
                             return '<a href="/admin/company/' + data + '/edit"><img src="{{ asset('images/edit-icon.png') }}"></a>';
-                        }
+                        },
+                        'orderable': false,
+                        'searchable': false
                     },
                     {
                         'data': 'CompanyId',
                         'render': function( data, type, row, meta ) {
                             return '<a href="/admin/company/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
-                        }
+                        },
+                        'orderable': false,
+                        'searchable': false
                     },
                 ]
             });
