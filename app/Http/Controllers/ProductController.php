@@ -25,7 +25,7 @@ class ProductController extends Controller
         $categoryId = $request->get('categoryId');
         $subCategoryId = $request->get('subCategoryId');
 
-        $total = DB::table('tbl_product')->where( 'display', 'Y')->count();
+        $total = DB::table('tbl_product')->where( 'display', 'Y')->where('Rate', '>', '0')->count();
 
         if( $categoryId == 0 )
         {
@@ -34,6 +34,7 @@ class ProductController extends Controller
                         ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                         ->offset($start)->limit($length)                            
                         ->where( 'display','Y')
+                        ->where('Rate', '>', '0')
                         ->orderBy('ProductId', 'DESC')->get();
         }
         else if ( $subCategoryId == 0 )
@@ -43,6 +44,7 @@ class ProductController extends Controller
                         ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                         ->offset($start)->limit($length)                            
                         ->where( 'display','Y')
+                        ->where('Rate', '>', '0')
                         ->where('CategoryId', $categoryId)
                         ->orderBy('ProductId', 'DESC')->get();
         }
@@ -53,6 +55,7 @@ class ProductController extends Controller
                         ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                         ->offset($start)->limit($length)                            
                         ->where( 'display','Y')
+                        ->where('Rate', '>', '0')
                         ->where('CategoryId', $categoryId)
                         ->where('SubCategoryId', $subCategoryId)
                         ->orderBy('ProductId', 'DESC')->get();
