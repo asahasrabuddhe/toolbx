@@ -23,10 +23,18 @@
                         </div>           
                     </div>
                     <div class="row">
-                        <div class="col-sm-6"></div>
-                        <div class="col-sm-4" style="text-align: right;background:#EEEEEE;padding: 5px;">
-                            <input type="text" id="from_date" size="30" class="col-sm-6" name="fromDate" value="{{ date('M d, Y') }}">
-                            <input type="text" id="to_date" size="30" class="col-sm-6" name="toDate" value="{{ date('M d, Y', strtotime('+7 days')) }}">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm-6" style="text-align: right;background:#EEEEEE;padding: 5px;">
+                            <div class="col-sm-6 npl">
+                                <div class="input-group from">
+                                    <input type="text" id="from_date" size="30" class="form-control" name="fromDate" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 npr">
+                                <div class="input-group to">
+                                    <input type="text" id="to_date" size="30" class="form-control" name="toDate" value="{{ date('M d, Y', strtotime('+7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-sm-2" style="text-align: right;margin-bottom: 10px;">
                             <a id="export_csv" style="text-decoration: none;"> + EXPORT </a>
@@ -150,6 +158,9 @@
                 onSelect: function() {
                     tblOrders.draw();
                 }
+            });
+            $('.input-group-addon').on('click', function() {
+                $(this).parent().find('input').datepicker().focus();
             });
             $('#export_csv').on('click', function(e) {
                 e.preventDefault();

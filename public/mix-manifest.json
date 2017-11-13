@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/js/download.js": "/js/download.js",
     "/images/about-thumbnail-placeholder.png": "/images/about-thumbnail-placeholder.png",
     "/images/arrow_16.png": "/images/arrow_16.png",
     "/images/back-icon.png": "/images/back-icon.png",
