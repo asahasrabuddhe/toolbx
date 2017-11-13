@@ -141,6 +141,7 @@ class CompaniesController extends Controller
                         ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
                         ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
                         ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
+                        ->offset($start)->limit($length)
                         ->where('tbl_order.CompanyId',$id)
                         ->groupBy('tbl_order.OrderId')
                         ->get();
@@ -167,6 +168,7 @@ class CompaniesController extends Controller
 
         $runners = DB::table('tbl_registration')
                         ->select('RegistrationName', 'RegistrationPhoneNo', 'RegistrationEmail', 'RegistrationId')
+                        ->offset($start)->limit($length)
                         ->where('CompanyId',$id)
                         ->where('RegsitrationRoleId', 4)
                         ->get();
@@ -193,6 +195,7 @@ class CompaniesController extends Controller
 
         $runners = DB::table('tbl_registration')
                         ->select('RegistrationName', 'RegistrationPhoneNo', 'RegistrationEmail', 'RegistrationId')
+                        ->offset($start)->limit($length)
                         ->where('CompanyId',$id)
                         ->where('RegsitrationRoleId', 2)
                         ->get();
@@ -217,6 +220,7 @@ class CompaniesController extends Controller
         $runners = DB::table('tbl_order')
                         ->join('tbl_payments', 'tbl_payments.OrderId', 'tbl_order.OrderId')
                         ->select('tbl_payments.PaymentDate', 'tbl_payments.OrderId', 'tbl_payments.CardStripTokan', 'tbl_payments.TotalAmount')
+                        ->offset($start)->limit($length)
                         ->where('tbl_order.CompanyId',$id)
                         ->get();
         $data = [
