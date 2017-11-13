@@ -130,7 +130,14 @@ class OrdersController extends Controller
 
     public function exportOrderPdf(Request $request, $id)
     {
-        $view = View::make('admin.order.view', ['mode' => 'pdf']);
+        $order_details = DB::table('tbl_order')
+                    ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
+                    ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
+                    ->select('tbl_product.ProductName', 'tbl_order_details.Quantity', 'tbl_order_details.Amount')
+                    ->where('tbl_order.OrderId', $id)
+                    ->get();
+
+        $view = View::make('admin.order.pdf', ['order_details_table' => $order_details]);
         
         $html = $view->render();
 

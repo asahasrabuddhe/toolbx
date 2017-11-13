@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
         View::creator('admin.product.view', 'App\Http\ViewCreators\EditProductCreator');
         View::creator('admin.product.edit', 'App\Http\ViewCreators\EditProductCreator');
         View::creator('admin.order.view', 'App\Http\ViewCreators\ViewOrderCreator');
+        View::creator('admin.order.pdf', 'App\Http\ViewCreators\ViewOrderCreator');
     }
 
     /**

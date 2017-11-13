@@ -8,14 +8,10 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3 npr">
-            @if(isset($mode) && $mode != 'pdf')
-                @include('includes.sidenav')
-            @endif
+            @include('includes.sidenav')
         </div>
         <div class="col-sm-9 npl">
-            @if(isset($mode) && $mode != 'pdf')
-                @include('includes.header')
-            @endif
+            @include('includes.header')
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
