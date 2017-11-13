@@ -22,14 +22,16 @@
                             </h4>           
                         </label>
                     </div>
-                    <form class="col-sm-9" style="background-color:#ffffff;" action=" {{ url('products') }}" method="POST">
+                    <form class="col-sm-9" style="background-color:#ffffff;" action=" {{ url('product/' . Request::route('id') . '/update') }}" method="POST">
+                        {{ csrf_field() }}
                         {{ csrf_field() }}
                         <div class="row">
                             <div class="col-sm-4 labelalign">
                                 <label>CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="category" id="categoryId" class="form-control valid"></select>
+                                <select name="category" id="categoryId" class="form-control valid" readonly>
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -37,7 +39,7 @@
                                 <label>SUB CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="subcategory" id="subCategoryId" class="form-control" required=""></select>
+                                <select name="subcategory" id="subCategoryId" class="form-control" readonly></select>
                             </div>
                         </div>
                         <div class="row">
@@ -45,7 +47,7 @@
                                 <label>PRODUCT NAME</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="productname" class="form-control" value="" placeholder="">
+                                <input type="text" name="productname" class="form-control" value="{{ $product_info->ProductName or '' }}" placeholder="">
                             </div>
                         </div>
                         <div class="row">
@@ -53,15 +55,16 @@
                                 <label>DESCRIPTION</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <textarea id="description" name="description" class="form-control" cols="10" rows="5"></textarea>
+                                <textarea id="description" name="description" class="form-control" cols="10" rows="5">{{ $product_info->ProductDetails or '' }}</textarea>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4" style="margin-top:7px;height: 50px;">
+                            <div class="col-sm-4">
                                 <label>IMAGE</label>
                             </div>
-                            <div class="col-sm-7" style="margin-top:7px;height: 50px;">
-                                <input type="file" name="productimage" id="image">
+                            <div class="col-sm-7">
+                                <img src="{{ $product_info->ProductImage or '' }}" class="img-responsive productImage" style="width: 75%">
+                                <input type="file" name="newImage" id="newImage">
                             </div>
                         </div>
                         <div class="row">
@@ -69,16 +72,16 @@
                                 <label>PRICE ($)</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="price" class="form-control" value="" placeholder="">
+                                <input type="text" name="price" class="form-control" value="{{ $product_info->Rate or '' }}" placeholder="">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-offset-4 col-sm-7">
                                 <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-gray" onclick="window.location.assign('http://toolbx.applabb.ca/admin/list_products')" type="reset">CANCEL</button>
+                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-gray" onclick="window.location.assign('{{ url('/admin/product/list_products') }}')" type="reset">CANCEL</button>
                                 </div>
                                 <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-blue common" name="submit" type="submit">ADD</button>
+                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-blue common" name="submit" type="submit">SAVE</button>
                                 </div>
                             </div>
                         </div>
@@ -117,19 +120,17 @@
     <script>
         $(document).ready(function(){
             $('#categoryId').select2({
+                 initSelection: function (element, callback) {
+                    callback({id: '{{ $product_info->CategoryId }}', 'text': '{{ $product_info->CategoryName }}'});
+                },
                 placeholder: 'Select Category',
-                ajax: {
-                    url: '{{ url('/categories') }}',
-                }
             }).on('change', function() {  $('#subCategoryId').trigger('change'); });
             $('#subCategoryId').select2({
+                initSelection: function (element, callback) {
+                    callback({id: '{{ $product_info->SubCategoryId }}', 'text': '{{ $product_info->SubCategoryName }}'});
+                },
                 placeholder: 'Select Sub Category',
-                ajax:{
-                    url: function() {
-                        var categoryId = $('#categoryId').val();
-                        return '{{ url('/categories/') }}' + '/' +  categoryId + '/sub_categories';
-                    }
-                } 
+                readonly: true,
             });
             tinymce.init({
                 selector: '#description',

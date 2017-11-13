@@ -23,6 +23,9 @@
                     @elseif(Request::is('admin/owner/*'))
                         <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT OWNER</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/owner/' . Request::route('id') . '/update') }}" method="post">
+                    @elseif(Request::is('admin/account'))
+                        <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>ADMIN ACCOUNT</label></h4>
+                        <form class="top-form" id="top_form1" action="{{ url('/admin/update') }}" method="post">
                     @endif
                         {{ csrf_field() }}
                         <div class="col-sm-9" style="background-color:#ffffff;">
@@ -30,24 +33,26 @@
                                 <div class="col-sm-4 labelalign">
                                     <label>NAME</label>
                                 </div>
-                                <div class="form-group col-sm-5">
-                                    <input class="form-control" placeholder="" required="" style="background:#FFFFFF" name="name" type="text" value="{{ $user_info->RegistrationName or '' }}">
+                                <div class="form-group col-sm-8">
+                                    <input class="form-control" placeholder="" required="" name="name" type="text" value="{{ $user_info->RegistrationName or '' }}">
                                 </div>
                             </div>
+                            @if(Request::is('/admin/user/*') || Request::is('admin/employee/*') || Request::is('admin/owner/*'))
                             <div class="row">
                                 <div class="col-sm-4 labelalign">
                                     <label>PHONE NUMBER</label>
                                 </div>
-                                <div class="form-group col-sm-5">
-                                    <input class="form-control" placeholder="" required="" style="background:#FFFFFF" name="phoneno" type="text" value="{{ $user_info->RegistrationPhoneNo or '' }}">
+                                <div class="form-group col-sm-8">
+                                    <input class="form-control" placeholder="" required="" name="phoneno" type="text" value="{{ $user_info->RegistrationPhoneNo or '' }}">
                                 </div>
                             </div>
+                            @endif
                             <div class="row">
                                 <div class="col-sm-4 labelalign">
                                     <label>EMAIL</label>
                                 </div>
-                                <div class="form-group col-sm-5">
-                                    <input class="form-control" placeholder="" readonly disabled required="" style="background:#FFFFFF" type="text" value="{{ $user_info->RegistrationEmail or '' }}">
+                                <div class="form-group col-sm-8">
+                                    <input class="form-control" placeholder="" readonly disabled required="" type="text" value="{{ $user_info->RegistrationEmail or '' }}">
                                 </div>
                             </div>
                             @if(Request::is('admin/employee/*') || Request::is('admin/owner/*'))
@@ -55,25 +60,32 @@
                                     <div class="col-sm-4 labelalign">
                                         <label>ENTER COMPANY</label>
                                     </div>
-                                    <div class="form-group col-sm-5">
+                                    <div class="form-group col-sm-8">
                                         @if(Request::is('admin/employee/*'))
-                                            <input class="form-control" placeholder="" readonly disabled required="" style="background:#FFFFFF" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
+                                            <input class="form-control" placeholder="" readonly disabled required="" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
                                             <input type="hidden" name="type" value="employee">
                                         @elseif(Request::is('admin/owner/*'))
-                                            <input class="form-control" placeholder="" required="" style="background:#FFFFFF" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
+                                            <input class="form-control" placeholder="" required="" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
                                             <input type="hidden" name="type" value="owner">
                                         @endif
                                     </div>
                                 </div>
                             @endif
-                            <div class="col-sm-offset-4 col-sm-8">
-                                <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-gray" onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" type="reset">Cancel</button>
+                            <div class="row">
+                                <div class="col-sm-offset-4 col-sm-4 form-group">
+                                    <button style="width: 160px;" class="form-control btn-default btn-gray" onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" type="reset">CANCEL</button>
                                 </div>   
-                                <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-blue" name="submit" type="submit">Save</button>
+                                <div class="col-sm-4 form-group">
+                                    <button style="width: 160px;" class="form-control btn-default btn-blue" name="submit" type="submit">SAVE</button>
                                 </div>
                             </div>
+                            @if(Request::is('admin/account'))
+                            <div class="row">
+                                <div class="col-md-offset-4 col-md-8 form-group">
+                                    <a href="https://dashboard.stripe.com/login" target="_blank"  class="form-control btn-default btn-blue" style="text-decoration: none; text-align: center; vertical-align: middle;">LOG IN TO STRIPE</a>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </form>
                 </div>

@@ -33,7 +33,7 @@
                         <div class="col-sm-2" style="text-align: right;margin-bottom: 10px;">
                             <label>
                                 <span class="export_csv" style="float: right;background:#EEEEEE;padding: 5px;margin-right: -18px;">
-                                    <a href="http://toolbx.applabb.ca/admin/getcmpcsv" style="text-decoration: none;">EXPORT</a>                  
+                                    <a id="export_csv" style="text-decoration: none;">EXPORT</a>                  
                                 </span>
                             </label>
                         </div>
@@ -76,6 +76,9 @@
     </div> 
 </div>
 @endsection
+@section('scripts-top')
+    <script type="text/javascript" src="{{ asset('js/download.js') }}"></script>
+@endsection
 @section('scripts')
     <script>
         $(document).ready(function(){
@@ -107,6 +110,22 @@
                         }
                     },
                 ]
+            });
+
+            $('#export_csv').on('click', function(e) {
+                e.preventDefault();
+                var url = "{{ url('admin/companies/export') }}";
+                $.ajax({
+                    type: 'GET',
+                    url:  url,
+                    dataType: 'json',
+                    success: function(data) {
+                        download(data.data_text, 'export.csv', 'text/csv');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
             });
         });
     </script>

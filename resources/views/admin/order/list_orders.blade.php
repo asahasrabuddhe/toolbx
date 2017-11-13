@@ -2,6 +2,7 @@
 @section('title', 'List Users - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -22,8 +23,13 @@
                         </div>           
                     </div>
                     <div class="row">
-                        <div class="col-sm-offset-9 col-sm-3" style="text-align: right;margin-bottom: 10px;">
-                            <a href="http://toolbx.applabb.ca/admin/add_product" style="text-decoration: none;margin-right: -6%;"> + EXPORT </a>
+                        <div class="col-sm-6"></div>
+                        <div class="col-sm-4" style="text-align: right;background:#EEEEEE;padding: 5px;">
+                            <input type="text" id="from_date" size="30" class="col-sm-6" name="fromDate" value="{{ date('M d, Y') }}">
+                            <input type="text" id="to_date" size="30" class="col-sm-6" name="toDate" value="{{ date('M d, Y', strtotime('+7 days')) }}">
+                        </div>
+                        <div class="col-sm-2" style="text-align: right;margin-bottom: 10px;">
+                            <a id="export_csv" style="text-decoration: none;"> + EXPORT </a>
                         </div>
                     </div>    
                     <table class="table" id="users">
@@ -68,21 +74,29 @@
     </div> 
 </div>
 @endsection
+@section('scripts-top')
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ asset('js/download.js') }}"></script>
+@endsection
 @section('scripts')
     <script>
         $(document).ready(function(){
-            $('#users').DataTable({
+            var tblOrders = $('#users').DataTable({
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
                     url: '/orders',
-                    type: 'get'
+                    type: 'get',
+                    data: function(d) {
+                        d.fromDate = $('#from_date').val(),
+                        d.toDate = $('#to_date').val()
+                    }
                 },
                 'columns': [
                     {
                         'data': 'OrderId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="' + '{{ url('admin/order') }}' + '/' + data + '">' + data + '</a>';
+                            return '<a href="' + '{{ url('admin/order') }}' + '/' + data + '/view">' + data + '</a>';
                         }
                     },
                     {'data': 'JobSiteName'},
@@ -118,6 +132,48 @@
                         }
                     },
                 ]
+            });
+            $('#from_date').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                maxDate: new Date,
+                onSelect: function(selectedDate){
+                    $('#to_date').datepicker('option', 'minDate', selectedDate);
+                    tblOrders.draw();
+                }
+            });
+            $('#to_date').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                onSelect: function() {
+                    tblOrders.draw();
+                }
+            });
+            $('#export_csv').on('click', function(e) {
+                e.preventDefault();
+                // ADD LOGIC FOR SELECTED RECORDS
+                var ids = [];
+                $.each($('#orders input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
+
+                var f = $('#from_date').datepicker('getDate').toISOString();
+                var t = $('#to_date').datepicker('getDate').toISOString();
+
+                var url = "{{ url('admin/orders/export') }}" + "?from_date=" + f + "&to_date=" + t;
+                if(ids.length)
+                    url += "&ids=" + ids.join(',');
+                $.ajax({
+                    type: 'GET',
+                    url:  url,
+                    dataType: 'json',
+                    success: function(data) {
+                    download(data.data_text, 'export.csv', 'text/csv');
+                    },
+                    error: function(error) {
+                    console.log(error);
+                    }
+                });
             });
         });
     </script>

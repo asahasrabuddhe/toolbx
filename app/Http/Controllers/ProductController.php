@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\ToolbxAPI;
 
@@ -88,6 +89,40 @@ class ProductController extends Controller
         ]);
 
         return response()->json($response);
+    }
 
+    public function updateProduct(Request $request, $id)
+    {
+        $category = $request->get('category');
+        $subCategory = $request->get('subcategory');
+        $productName = $request->get('productname');
+        $descripton = $request->get('description');
+        $productImage = $request->get('newImage');
+        $price = $request->get('price');
+        $lastModifiedBy = Session::get('user_data')->admin_id;
+
+        $response = $this->toolbxAPI->post('product/update', '', [
+            'id' => $id,
+            'Category' => $category,
+            'SubCategory' => $subCategory,
+            'ProductName' => $productName,
+            'Description' => $descripton,
+            'Image' => $productImage,
+            'Price' => $price,
+            'LastModifiedBy' => $lastModifiedBy,
+        ]);
+
+        if( $response->message_code == 1000 )
+        {
+            Session::flash('success_msg', $response->message_text);
+            return Redirect::to('admin/product/list_products');
+        }
+    }
+
+    public function deleteProduct(Request $request, $id)
+    {
+        $response = $this->toolbxAPI->delete('product/' . $id . '/deleteproduct');
+        Session::flash('success_msg', 'Product deleted successufully');
+        return Redirect::to('admin/product/list_products');
     }
 }

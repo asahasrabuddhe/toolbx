@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\ToolbxAPI;
+use App\Helper;
 
 class CompaniesController extends Controller
 {
@@ -39,6 +40,22 @@ class CompaniesController extends Controller
         ];
 
         return response()->json($data);
+    }
+
+    public function getAllCompaniesCsv(Request $request)
+    {
+        $runners = DB::table('tbl_companies')
+                        ->select('CompanyId', 'CompanyName')                           
+                        ->where( 'display','Y')
+                        ->orderBy('CompanyId', 'DESC')->get();
+
+        ini_set('auto_detect_line_endings', true);
+
+        $csv_data = Helper::str_putcsv($runners->toArray());
+
+        return response()->json([
+            'message_code' => 1000, 'data_text' => $csv_data,
+        ]);
     }
 
     public function invite(Request $request)

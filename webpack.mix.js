@@ -13,6 +13,7 @@ let mix = require('laravel-mix');
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
+   .js('resources/assets/js/downloads.js', 'public/js')
    .copy('resources/assets/images/*', 'public/images')
    .copy('node_modules/datatables/media/css/jquery.dataTables.min.css', 'public/css')
    .copy('node_modules/select2/dist/css/select2.min.css', 'public/css')

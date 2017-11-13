@@ -14,6 +14,11 @@
            @include('includes.header')
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
+                @if(Session::get('success_msg'))
+                    <div class="alert alert-success">{{ Session::get('success_msg') }}</div>
+                @elseif(Session::get('error_msg'))
+                    <div class="alert alert-danger">{{ Session::get('error_msg') }}</div>
+                @endif
                 <div class="data-table table-responsive">
                     <div class="row">
                         <div class="col-sm-6">

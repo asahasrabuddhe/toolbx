@@ -9,7 +9,7 @@
 		  <ul class="dropdown-menu popupBasic">
 				<li><a href="{{ url('admin/account') }}">ACCOUNT</a></li>
 				<li style="border:solid 1px #eee"></li>
-				<li><a href="{{ url('admin/AdminChangePassword') }}">CHANGE PASSWORD</a></li>
+				<li><a href="{{ url('admin/change_password') }}">CHANGE PASSWORD</a></li>
 				<li style="border:solid 1px #eee"></li>
 				<li><a href="{{ url('admin/logout') }}">LOGOUT</a></li>
 		  </ul>

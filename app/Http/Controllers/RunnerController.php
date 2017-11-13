@@ -131,9 +131,6 @@ class RunnerController extends Controller
             
             return Redirect::to('/admin/user/list_users');
         }
-            
-        
-        
     }
 
     public function deleteRunner(Request $request, $id)
@@ -143,5 +140,45 @@ class RunnerController extends Controller
         Session::flash('success_msg', 'Runner Deleted Successfully');
 
         return Redirect::to('/admin/user/list_users');
+    }
+
+    public function updateAdmin(Request $request)
+    {
+        DB::table('tbl_administrator')
+            ->where('admin_id', Session::get('user_data')->admin_id)
+            ->update(['admin_name' => $request->get('name')]);
+
+        Session::flash('success_msg', 'Admin Updated Successfully');
+
+        $user_data = Session::get('user_data');
+        $user_data->admin_name = $request->get('name');
+        Session::put('user_data', $user_data);
+
+        return Redirect::to('/admin/user/list_users');
+    }
+
+    public function changeAdminPassword(Request $request)
+    {
+        if( $request->get('new_password') !== $request->get('confirm_password'))
+        {
+            $response = $this->toolbxAPI->post('admin/changepassword', '', [
+                'id' => Session::get('user_data')->admin_id,
+                'old_password' => $request->get('current_password'),
+                'new_password' => $request->get('new_password')
+            ]);
+        }
+        else
+        {
+            Session::flash('New password and Confirm Password are not matching');
+            return Redirect::to(url('/admin/change_password'));
+        }
+
+        if( $response === NULL ) {
+            Session::flash('success_msg','Admin Password changed successfully');
+            return $msg = 'Runner Invitation Sent successfully';
+        } else {
+            Session::flash('success_msg','Current password incorrect.');
+            return $response->message_text;
+        }
     }
 }

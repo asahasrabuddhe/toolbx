@@ -22,8 +22,7 @@
                             </h4>           
                         </label>
                     </div>
-                    <form class="col-sm-9" style="background-color:#ffffff;" action=" {{ url('products') }}" method="POST">
-                        {{ csrf_field() }}
+                    <div class="col-sm-9" style="background-color:#ffffff;">
                         <div class="row">
                             <div class="col-sm-4 labelalign">
                                 <label>CATEGORY</label>
@@ -58,11 +57,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-4" style="margin-top:7px;height: 50px;">
+                            <div class="col-sm-4">
                                 <label>IMAGE</label>
                             </div>
-                            <div class="col-sm-7" style="margin-top:7px;height: 50px;">
-                                <img src="{{ $product_info->ProductImage or '' }}" class="img-responsive" height="80" width="80">
+                            <div class="col-sm-7">
+                                <img src="{{ $product_info->ProductImage or '' }}" class="img-responsive" style="width: 75%">
                             </div>
                         </div>
                         <div class="row">
@@ -73,40 +72,7 @@
                                 <input type="text" name="price" class="form-control" value="{{ $product_info->Rate or '' }}" placeholder="">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-offset-4 col-sm-7">
-                                <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-gray" onclick="window.location.assign('http://toolbx.applabb.ca/admin/list_products')" type="reset">CANCEL</button>
-                                </div>
-                                <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-blue common" name="submit" type="submit">ADD</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">                            
-                    <div class="modal-header">                            
-                        <p style="text-align: center;"><b>DELETE MESSAGE</b></p>                             
-                    </div>                            
-                    <div class="modal-body">                            
-                        <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>                             
                     </div>
-                    <div class="modal-footer" style="margin-bottom:-19px">
-                        <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
-                            <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
-                                <button type="button" class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;">NO</button>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">                                               
-                            <a href="" id="button123" class="btn btn-info" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>                                                  
-                        </div>           
-                    </div>
-                </div>
-            </div>
-        </div>
     </div> 
 </div>
 @endsection

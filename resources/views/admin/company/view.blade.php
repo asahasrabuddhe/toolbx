@@ -146,7 +146,7 @@
                     {
                         'data': 'OrderId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="{{ url('#') }}"><img src="{{ asset('images/view.png') }}" width="20" height="17"></a>'
+                            return '<a href="{{ url('admin/order') }}/' + data + '/view' + '" ><img src="{{ asset('images/view.png') }}" width="20" height="17"></a>'
                         }
                     },
                     {
