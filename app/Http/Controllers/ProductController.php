@@ -44,6 +44,11 @@ class ProductController extends Controller
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
+                $filtered = DB::table('tbl_product')
+                            ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')                     
+                            ->where( 'display','Y')
+                            ->where('Rate', '>', '0')
+                            ->orderBy('ProductId', 'DESC')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            

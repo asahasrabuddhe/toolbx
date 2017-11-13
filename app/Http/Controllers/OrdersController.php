@@ -34,8 +34,9 @@ class OrdersController extends Controller
 
             $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_order.RegistrationId')
-                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status', 'tbl_runner_order.RunnerId')
                         ->offset($start)->limit($length)
                         ->where( 'tbl_order.display','Y')
                         ->whereBetween('OrderDate', [$fromDate, $toDate])
@@ -45,8 +46,9 @@ class OrdersController extends Controller
 
             $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_order.RegistrationId')
-                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status', 'tbl_runner_order.RunnerId')
                         ->offset($start)->limit($length)
                         ->where( 'tbl_order.display','Y')
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
@@ -72,7 +74,8 @@ class OrdersController extends Controller
 
             $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_order.RegistrationId')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
                         ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
                         ->where( 'tbl_order.display','Y')
                         ->whereBetween('OrderDate', [$fromDate, $toDate])
@@ -82,7 +85,8 @@ class OrdersController extends Controller
 
             $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_order.RegistrationId')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
                         ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
                         ->where( 'tbl_order.display','Y')
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
