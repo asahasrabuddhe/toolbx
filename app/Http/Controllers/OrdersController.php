@@ -116,6 +116,7 @@ class OrdersController extends Controller
                     ->select('tbl_product.ProductName', 'tbl_order_details.Quantity', 'tbl_order_details.Amount')
                     ->offset($start)->limit($length)
                     ->where('tbl_order.OrderId', $id)
+                    ->orderBy('tbl_order_details.ProductId')
                     ->get();
 
         $data = [

@@ -45,7 +45,7 @@
                         <tr>
                             <th class="clsleftheader">ORDER NO</th>
                             <th class="clsheader">JOBSITE</th>
-                            <th class="clsheader">TOTAL AMOUNT</th>
+                            <th class="clsheader">SUB TOTAL</th>
                             <th class="clsheader">DATE</th>
                             <th class="clsheader">TIME</th>
                             <th class="clsheader">RUNNER</th>
@@ -108,7 +108,12 @@
                         }
                     },
                     {'data': 'JobSiteName'},
-                    {'data': 'TotalAmount'},
+                    {
+                        'data': 'TotalAmount',
+                        'render': function( data, type, row, meta ) {
+                            return '$' + data;
+                        }
+                    },
                     {
                         'data': 'OrderDate',
                         'render': function( data, type, row, meta ) {
