@@ -23,5 +23,6 @@ class ViewOrderCreator
     		->where('tbl_order.OrderId', Request::route('id'))->first();
 
         $view->with('order_details', $order_details);
+        $view->with('mode', 'web');
     }
 }

@@ -32,7 +32,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-offset-10 col-sm-2" style="text-align: right;margin-bottom: 10px;">
-                            <a href="" style="text-decoration: none;"> + EXPORT </a>
+                            <a href="{{ url('/admin/order/' . Request::route('id') . '/export') }}" target="_blank" style="text-decoration: none;"> + EXPORT </a>
                         </div>
                     </div>
                     <div class="row">

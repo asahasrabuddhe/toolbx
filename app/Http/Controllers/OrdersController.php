@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\ToolbxAPI;
 use App\Helper;
+use PDF;
 
 class OrdersController extends Controller
 {
@@ -133,10 +134,6 @@ class OrdersController extends Controller
         
         $html = $view->render();
 
-        echo $html; dd();
-
-        $mpdf = new \Mpdf\Mpdf();
-        $mpdf->writeHtml($html);
-        $mpdf->Output();
+        return PDF::loadHTML($html)->inline();
     }
 }
