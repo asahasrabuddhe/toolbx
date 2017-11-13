@@ -16,6 +16,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
    .js('resources/assets/js/downloads.js', 'public/js')
    .copy('resources/assets/images/*', 'public/images')
    .copy('node_modules/datatables/media/css/jquery.dataTables.min.css', 'public/css')
+   .copy('node_modules/datatables/media/images', 'public/images')
    .copy('node_modules/select2/dist/css/select2.min.css', 'public/css')
    .copy('node_modules/select2/dist/js/select2.full.min.js', 'public/js')
    .copy('node_modules/tinymce', 'public/tinymce');
