@@ -119,7 +119,10 @@
                     {
                         'data': 'ProductImage',
                         'render': function( data, type, row, meta ) {
-                            return '<img src="' + data + '" class="img-responsive">';
+                            if( _.includes(data, 'http') == false )
+                                return '<img src="{{ asset('images/placeholder.png') }}" class="img-responsive">';
+                            else
+                                return '<img src="' + data + '" class="img-responsive">';
                         }
                     },
                     {'data': 'Rate'},
