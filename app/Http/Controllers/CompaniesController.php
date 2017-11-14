@@ -78,7 +78,7 @@ class CompaniesController extends Controller
             'Name' => $request->get('name'),
             'PhoneNo' => $request->get('phonenumber'),
             'Email' => $request->get('email'),
-            'Company' => $request->get('company')
+            'CompanyName' => $request->get('company')
         ]);
 
         if( $response === NULL ) {

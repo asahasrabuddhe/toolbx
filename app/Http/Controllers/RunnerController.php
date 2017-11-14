@@ -64,6 +64,7 @@ class RunnerController extends Controller
             'Name' => $request->get('name'),
             'PhoneNo' => $request->get('phonenumber'),
             'Email' => $request->get('email')
+            'CompanyName' => $request->get('company')
         ]);
 
         if( $response === NULL ) {

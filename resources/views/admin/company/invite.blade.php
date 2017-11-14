@@ -94,6 +94,9 @@
 				{
 					return this.optional(element) || /^[a-z," "]+$/i.test(value);
 				}, "Letters and spaces only please");
+				jQuery.validator.methods.email = function( value, element ) {
+				  return this.optional( element ) || /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test( value );
+				}
 			  	$("#form_inv").validate({
 			    	rules:
 				   	{
@@ -153,6 +156,7 @@
     				     	{	
     				     	    $("#getCode").html(data);
 	    						$("#getCodeModal").modal('show');
+	    						var data = "Invitation sent successfully to owner";
     				     	    $("#lblMessage").text(data);
     				     	    $( "#dialog" ).dialog({
                                   	modal: true,

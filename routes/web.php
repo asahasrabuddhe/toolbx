@@ -44,7 +44,7 @@ Route::view('/admin/owner/invite', 'admin.company.invite')->middleware('checkses
 Route::view('/admin/company/{id}/view', 'admin.company.view')->middleware('checksession');
 Route::view('/admin/company/{id}/edit', 'admin.company.edit')->middleware('checksession');
 
-Route::post('/admin/owner/invite', 'RunnerController@invite')->middleware('checksession');
+Route::post('/admin/owner/invite', 'CompaniesController@invite')->middleware('checksession');
 Route::get('/companies', 'CompaniesController@getAllCompanies')->middleware('checksession');
 Route::get('/company/{id}', 'CompaniesController@getOwner')->middleware('checksession');
 Route::post('/company/{id}/update', 'CompaniesController@updateOwner')->middleware('checksession');
