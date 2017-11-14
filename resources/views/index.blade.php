@@ -83,7 +83,7 @@
                             window.location.href = "/admin/user/list_users";
                         } else {
                             $("#error").fadeIn(1000, function() {      
-                                $("#error").html('<div class="alert alert-danger"> '+response+' !</div>');
+                                $("#error").html('<div class="alert alert-danger"> '+response.message_text+' !</div>');
                                 $("#btn-login").html('<span class="glyphicon glyphicon-log-in"></span> &nbsp; Sign In');
                             });
                         }
