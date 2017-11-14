@@ -90,6 +90,7 @@
     <script>
         $(document).ready(function(){
             var tblOrders = $('#users').DataTable({
+                'ordering': false,
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
@@ -172,7 +173,7 @@
                 e.preventDefault();
                 // ADD LOGIC FOR SELECTED RECORDS
                 var ids = [];
-                $.each($('#orders input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
+                $.each($('tbody input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
 
                 var f = $('#from_date').datepicker('getDate').toISOString();
                 var t = $('#to_date').datepicker('getDate').toISOString();
@@ -191,6 +192,9 @@
                     console.log(error);
                     }
                 });
+            });
+            $('#checkall').on('click', function(e) {
+                $('tbody').find('input').trigger('click');
             });
         });
     </script>

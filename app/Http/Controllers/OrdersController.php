@@ -68,21 +68,31 @@ class OrdersController extends Controller
     {
         $fromDate = date('Y:m:d H:i:s', strtotime($request->query('from_date')));
         $toDate = date('Y:m:d H:i:s', strtotime($request->query('to_date')));
+        $ids = explode(',', $request->query('ids'));
 
         if( isset($fromDate) && isset($toDate) ) {
-            $filtered = DB::table('tbl_order')->where('display', 'Y')->whereBetween('OrderDate', [$fromDate, $toDate])->count();
-
-            $orders = DB::table('tbl_order')
+            if( is_array($ids) )
+            {
+                $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
                         ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
                         ->where( 'tbl_order.display','Y')
                         ->whereBetween('OrderDate', [$fromDate, $toDate])
+                        ->whereIn('tbl_order.OrderId', $ids)
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
+            } else {
+                $orders = DB::table('tbl_order')
+                            ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                            ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                            ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                            ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                            ->where( 'tbl_order.display','Y')
+                            ->whereBetween('OrderDate', [$fromDate, $toDate])
+                            ->orderBy('tbl_order.OrderId', 'DESC')->get();
+            }
         } else {
-            $filtered = $total;
-
             $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
