@@ -18,7 +18,7 @@
                     <div class="row">
                         <label style="margin-left:;">
                             <h4>
-                                <img style="cursor: pointer;" onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{ asset('images/arrow_16.png') }}"> &nbsp; <label> ADD PRODUCT </label>
+                                <img style="cursor: pointer;" onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{ asset('images/arrow_16.png') }}"> &nbsp; <label> VIEW PRODUCT </label>
                             </h4>           
                         </label>
                     </div>
