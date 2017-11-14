@@ -73,7 +73,7 @@ class ProductController extends Controller
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
-                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->count();
+                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->where('Rate', '>', '0')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
@@ -102,10 +102,10 @@ class ProductController extends Controller
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
-                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->where('SubCategoryId', $subCategoryId)->count();
+                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->where('SubCategoryId', $subCategoryId)->where('Rate', '>', '0')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
-                            ->offset($start)->limit($length)                            
+                            // ->offset($start)->limit($length)                            
                             ->where( 'display','Y')
                             ->where('Rate', '>', '0')
                             ->where('CategoryId', $categoryId)

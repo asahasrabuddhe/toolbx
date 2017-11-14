@@ -92,6 +92,7 @@
     <script>
         $(document).ready(function(){
             var table = $('#users').DataTable({
+                'ordering': false,
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': false,
