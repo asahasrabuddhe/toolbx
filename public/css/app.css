@@ -8367,10 +8367,6 @@ body {
   padding-left: 0 !important;
 }
 
-.navbar-collapse.collapse.sidebar-navbar-collapse {
-  min-height: 1097px;
-}
-
 .content,
 .content .data-table {
   padding-bottom: 0px !important;
@@ -8388,7 +8384,7 @@ body {
   float: left;
   /*position:relative;
     width:59.9%;*/
-  position: relative;
+  position: absolute;
 }
 
 .clsleftheader {
@@ -8520,21 +8516,6 @@ input[type=password] {
   /*  Open Sans Regular*/
 }
 
-.footer {
-  background-color: #262626;
-  text-align: center;
-  color: #ffffff;
-  z-index: 400;
-  padding: 10px;
-  bottom: 0;
-  margin: auto;
-  width: 100%;
-  float: left;
-  /*position:relative;
-width:59.9%;*/
-  position: relative;
-}
-
 .logo {
   margin: auto;
   margin-top: 20%;
@@ -8600,7 +8581,11 @@ ul.sidenav-menu li a:hover {
 .content {
   padding: 30px;
   background-color: #eee;
-  min-height: 1000px;
+  min-height: 90vh;
+}
+
+.navbar-collapse.collapse.sidebar-navbar-collapse {
+  min-height: 97vh;
 }
 
 .top-header {

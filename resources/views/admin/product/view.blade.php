@@ -1,5 +1,5 @@
 @extends('includes.layouts.main')
-@section('title', 'List Users - ToolBX Admin')
+@section('title', 'View Product - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css">
@@ -11,16 +11,13 @@
             @include('includes.sidenav')
         </div>
         <div class="col-sm-9 npl">
-           @include('includes.header')
+            @include('includes.header')
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
                     <div class="row">
-                        <label style="margin-left:;">
-                            <h4>
-                                <img style="cursor: pointer;" onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{ asset('images/arrow_16.png') }}"> &nbsp; <label> VIEW PRODUCT </label>
-                            </h4>           
-                        </label>
+                        <label style="margin-left:;"></label>
+                        <h4><label style="margin-left:;"><img onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{  asset('images/arrow_16.png')  }}" style="cursor: pointer;"> &nbsp; <label>VIEW PRODUCT</label></label></h4>
                     </div>
                     <div class="col-sm-9" style="background-color:#ffffff;">
                         <div class="row">
@@ -28,7 +25,7 @@
                                 <label>CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="category" id="categoryId" class="form-control valid">
+                                <select class="form-control valid" id="categoryId" name="category">
                                 </select>
                             </div>
                         </div>
@@ -37,7 +34,8 @@
                                 <label>SUB CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="subcategory" id="subCategoryId" class="form-control" required=""></select>
+                                <select class="form-control" id="subCategoryId" name="subcategory" required="">
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -45,7 +43,7 @@
                                 <label>PRODUCT NAME</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="productname" class="form-control" value="{{ $product_info->ProductName or '' }}" placeholder="">
+                                <input class="form-control" name="productname" placeholder="" type="text" value="{{ $product_info->ProductName or '' }}">
                             </div>
                         </div>
                         <div class="row">
@@ -53,27 +51,28 @@
                                 <label>DESCRIPTION</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <textarea id="description" name="description" class="form-control" cols="10" rows="5">{{ $product_info->ProductDetails or '' }}</textarea>
+                                <textarea class="form-control" cols="10" id="description" name="description" rows="5">{{ $product_info->ProductDetails or '' }}</textarea>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
                                 <label>IMAGE</label>
                             </div>
-                            <div class="col-sm-7">
-                                <img src="{{ $product_info->ProductImage or '' }}" class="img-responsive" style="width: 75%">
-                            </div>
+                            <div class="col-sm-7"><img class="img-responsive" src="{{  $product_info->ProductImage  or  ''  }}" style="width: 75%"></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-4 labelalign">
                                 <label>PRICE ($)</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="price" class="form-control" value="{{ $product_info->Rate or '' }}" placeholder="">
+                                <input class="form-control" name="price" placeholder="" type="text" value="{{ $product_info->Rate or '' }}">
                             </div>
                         </div>
                     </div>
-    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @section('scripts-top')

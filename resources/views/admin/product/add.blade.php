@@ -1,5 +1,5 @@
 @extends('includes.layouts.main')
-@section('title', 'List Users - ToolBX Admin')
+@section('title', 'Add Product - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css">
@@ -11,25 +11,23 @@
             @include('includes.sidenav')
         </div>
         <div class="col-sm-9 npl">
-           @include('includes.header')
+            @include('includes.header')
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
                     <div class="row">
-                        <label style="margin-left:;">
-                            <h4>
-                                <img style="cursor: pointer;" onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{ asset('images/arrow_16.png') }}"> &nbsp; <label> ADD PRODUCT </label>
-                            </h4>           
-                        </label>
+                        <label style="margin-left:;"></label>
+                        <h4><label style="margin-left:;"><img onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{  asset('images/arrow_16.png')  }}" style="cursor: pointer;"> &nbsp; <label>ADD PRODUCT</label></label></h4>
                     </div>
-                    <form class="col-sm-9" style="background-color:#ffffff;" action=" {{ url('products') }}" method="POST">
+                    <form action="{{  url('products')  }}" class="col-sm-9" method="post" style="background-color:#ffffff;">
                         {{ csrf_field() }}
                         <div class="row">
                             <div class="col-sm-4 labelalign">
                                 <label>CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="category" id="categoryId" class="form-control valid"></select>
+                                <select class="form-control valid" id="categoryId" name="category">
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -37,7 +35,8 @@
                                 <label>SUB CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select name="subcategory" id="subCategoryId" class="form-control" required=""></select>
+                                <select class="form-control" id="subCategoryId" name="subcategory" required="">
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -45,7 +44,7 @@
                                 <label>PRODUCT NAME</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="productname" class="form-control" value="" placeholder="">
+                                <input class="form-control" name="productname" placeholder="" type="text" value="">
                             </div>
                         </div>
                         <div class="row">
@@ -53,7 +52,7 @@
                                 <label>DESCRIPTION</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <textarea id="description" name="description" class="form-control" cols="10" rows="5"></textarea>
+                                <textarea class="form-control" cols="10" id="description" name="description" rows="5"></textarea>
                             </div>
                         </div>
                         <div class="row">
@@ -61,7 +60,7 @@
                                 <label>IMAGE</label>
                             </div>
                             <div class="col-sm-7" style="margin-top:7px;height: 50px;">
-                                <input type="file" name="productimage" id="image">
+                                <input id="image" name="productimage" type="file">
                             </div>
                         </div>
                         <div class="row">
@@ -69,44 +68,46 @@
                                 <label>PRICE ($)</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input type="text" name="price" class="form-control" value="" placeholder="">
+                                <input class="form-control" name="price" placeholder="" type="text" value="">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-offset-4 col-sm-7">
                                 <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-gray" onclick="window.location.assign('http://toolbx.applabb.ca/admin/list_products')" type="reset">CANCEL</button>
+                                    <button class="form-control btn-default btn-gray" onclick="window.location.assign('http://toolbx.applabb.ca/admin/list_products')" style="margin-left: -15px;width: 135px;" type="reset">CANCEL</button>
                                 </div>
                                 <div class="col-sm-6">
-                                    <button style="margin-left: -15px;width: 135px;" class="form-control btn-default btn-blue common" name="submit" type="submit">ADD</button>
+                                    <button class="form-control btn-default btn-blue common" name="submit" style="margin-left: -15px;width: 135px;" type="submit">ADD</button>
                                 </div>
                             </div>
                         </div>
-                    </form>
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">                            
-                    <div class="modal-header">                            
-                        <p style="text-align: center;"><b>DELETE MESSAGE</b></p>                             
-                    </div>                            
-                    <div class="modal-body">                            
-                        <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>                             
-                    </div>
-                    <div class="modal-footer" style="margin-bottom:-19px">
-                        <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
-                            <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
-                                <button type="button" class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;">NO</button>
+                    </form><!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p style="text-align: center;"><b>DELETE MESSAGE</b></p>
+                                </div>
+                                <div class="modal-body">
+                                    <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>
+                                </div>
+                                <div class="modal-footer" style="margin-bottom:-19px">
+                                    <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
+                                        <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
+                                            <button class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;" type="button">NO</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">
+                                        <a class="btn btn-info" href="" id="button123" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">                                               
-                            <a href="" id="button123" class="btn btn-info" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>                                                  
-                        </div>           
                     </div>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 </div>
 @endsection
 @section('scripts-top')

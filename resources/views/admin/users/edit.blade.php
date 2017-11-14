@@ -1,5 +1,13 @@
 @extends('includes.layouts.main')
-@section('title', 'View Runner - ToolBX Admin')
+@if(Request::is('admin/user/*/view'))
+   @section('title', 'Edit Runner - ToolBX Admin')
+@elseif(Request::is('admin/employee/*'))
+   @section('title', 'Edit Employee - ToolBX Admin')
+@elseif(Request::is('admin/owner/*'))
+    @section('title', 'Edit Owner - ToolBX Admin')
+@elseif(Request::is('admin/account'))
+   @section('title', 'Admin Account - ToolBX Admin')
+@endif
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
 @endsection

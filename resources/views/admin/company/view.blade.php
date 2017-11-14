@@ -14,7 +14,7 @@
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
-                    <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>VIEW USER</label></h4>
+                    <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>VIEW COMPANY</label></h4>
                     <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#orders">ORDERS</a></li>
                         <li><a data-toggle="tab" href="#employees">EMPLOYEES</a></li>

@@ -1,5 +1,5 @@
 @extends('includes.layouts.main')
-@section('title', 'View Runner - ToolBX Admin')
+@section('title', 'Edit Company - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
 @endsection
@@ -14,7 +14,7 @@
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
-                    <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>VIEW USER</label></h4>
+                    <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT COMPANY</label></h4>
                     <form class="top-form" id="top_form1" action="{{ url('/company/' . Request::route('id') . '/update') }}" method="post">
                         {{ csrf_field() }}
                         <div class="col-sm-9" style="background-color:#ffffff;">
