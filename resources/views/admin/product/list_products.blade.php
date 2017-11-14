@@ -151,7 +151,7 @@
                 ajax: {
                     url: '{{ url('/categories') }}',
                 }
-            }).on('change', function() {  $('#subCategoryId').trigger('change'); });
+            }).on('change', function() {  $('#subCategoryId').val(0); $('#subCategoryId').trigger('change'); });
             $('#subCategoryId').select2({
                 placeholder: 'Select a Sub Category',
                 initSelection: function (element, callback) {

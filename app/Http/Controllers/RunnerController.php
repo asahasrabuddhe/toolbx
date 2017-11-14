@@ -81,16 +81,12 @@ class RunnerController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
 
-        $total = DB::table('tbl_order')->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                        ->join('tbl_registration', 'tbl_runner_order.RunnerId', '=', 'tbl_registration.RegistrationId')
-                        ->join('tbl_companies', 'tbl_companies.CompanyId', '=', 'tbl_order.CompanyId')
-                        ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
-                        ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
-                        ->selectRaw('tbl_order.OrderId, tbl_companies.CompanyName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName, tbl_order.status' )
-                        ->where('tbl_registration.RegistrationId', $id)
+        $total = DB::table('tbl_order')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->where('tbl_runner_order.RunnerId', $id)
                         ->where( 'tbl_order.display','Y')
                         ->orderBy('tbl_order.OrderId', 'DESC')
-                        ->groupBy('tbl_order.OrderId')->count();
+                        ->count();
 
         $runners = DB::table('tbl_order')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
