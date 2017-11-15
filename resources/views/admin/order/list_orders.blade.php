@@ -49,6 +49,7 @@
                                 <th class="clsheader">TIME</th>
                                 <th class="clsheader">RUNNER</th>
                                 <th class="clsheader">STATUS</th>
+                                <th class="clsheader">RATING</th>
                                 <th class="clsrightheader"><input id="checkall" type="checkbox"></th>
                             </tr>
                         </thead>
@@ -95,6 +96,8 @@
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': true,
+                'lengthChange': false,
+                'pageLength': 8,
                 'ajax': {
                     url: '/orders',
                     type: 'get',
@@ -139,6 +142,15 @@
                                 return data;
                             else
                                 return '-';
+                        }
+                    },
+                    {
+                        'data':'OrderRating',
+                        'render': function( data, type, row, meta ) {
+                            if( data == 0 )
+                                return 'Order Not Rated';
+                            else
+                                 return data;
                         }
                     },
                     {

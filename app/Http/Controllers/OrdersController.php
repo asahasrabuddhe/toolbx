@@ -36,9 +36,11 @@ class OrdersController extends Controller
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status', 'tbl_runner_order.RunnerId')
+                        ->join('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, tbl_order.OrderDate, tbl_registration.RegistrationName, tbl_order.OrderDate, tbl_order.status, tbl_runner_order.RunnerId, (CASE WHEN tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.IsLeaving="Y" THEN "Inprocess" WHEN tbl_order.IsAccepted="Y" THEN "Accepted" ELSE "Pending" END) as status, tbl_notifications.OrderRating')
                         ->offset($start)->limit($length)
                         ->where( 'tbl_order.display','Y')
+                        ->where('tbl_notifications.NotificationsType', 1)
                         ->whereBetween('OrderDate', [$fromDate, $toDate])
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
         } else {
@@ -48,9 +50,10 @@ class OrdersController extends Controller
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status', 'tbl_runner_order.RunnerId')
+                        ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, tbl_order.OrderDate, tbl_registration.RegistrationName, tbl_order.OrderDate, tbl_order.status, tbl_runner_order.RunnerId, (CASE WHEN tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.IsLeaving="Y" THEN "Inprocess" WHEN tbl_order.IsAccepted="Y" THEN "Accepted" ELSE "Pending" END) as status, tbl_notifications.OrderRating')
                         ->offset($start)->limit($length)
                         ->where( 'tbl_order.display','Y')
+                        ->where('tbl_notifications.NotificationsType', 1)
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
         }
         
