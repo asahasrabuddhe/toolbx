@@ -19,7 +19,7 @@
                         <label style="margin-left:;"></label>
                         <h4><label style="margin-left:;"><img onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{  asset('images/arrow_16.png')  }}" style="cursor: pointer;"> &nbsp; <label>EDIT PRODUCT</label></label></h4>
                     </div>
-                    <form action="{{  url('product/'  .  Request::route('id')  .  '/update')  }}" class="col-sm-9" method="post" style="background-color:#ffffff;">
+                    <form action="{{  url('product/'  .  Request::route('id')  .  '/update')  }}" class="col-sm-9" method="post" style="background-color:#ffffff;" enctype="multipart/form-data">
                         {{ csrf_field() }} {{ csrf_field() }}
                         <div class="row">
                             <div class="col-sm-4 labelalign">
@@ -27,6 +27,7 @@
                             </div>
                             <div class="form-group col-sm-7">
                                 <select class="form-control valid" id="categoryId" name="category">
+                                    <option value="{{ $product_info->CategoryId }}" selected="selected">{{ $product_info->CategoryName }}</option>
                                 </select>
                             </div>
                         </div>
@@ -36,6 +37,7 @@
                             </div>
                             <div class="form-group col-sm-7">
                                 <select class="form-control" id="subCategoryId" name="subcategory">
+                                    <option value="{{ $product_info->SubCategoryId }}" selected="selected">{{ $product_info->SubCategoryName }}</option>
                                 </select>
                             </div>
                         </div>

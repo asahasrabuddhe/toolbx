@@ -130,21 +130,31 @@ class ProductController extends Controller
         $subCategory = $request->get('subcategory');
         $productName = $request->get('productname');
         $descripton = $request->get('description');
-        $productImage = $request->get('productimage');
+        $productImage = $request->file('productimage');
         $price = $request->get('price');
         $createdBy = Session::get('user_data')->admin_id;
+
+        $path = public_path('/api/uploads');
+        $productImage->move($path, $productImage->getClientOriginalName());
+        $productImagePath = url('api/uploads/' . $productImage->getClientOriginalName());
 
         $response = $this->toolbxAPI->post('product/addproduct', '', [
             'Category' => $category,
             'SubCategory' => $subCategory,
             'ProductName' => $productName,
             'Description' => $descripton,
-            'Image' => $productImage,
+            'Image' => $productImagePath,
             'Price' => $price,
             'CreatedBy' => $createdBy,
         ]);
 
-        return response()->json($response);
+        if( $response->message_code == 1000) {
+            Session::flash('success_msg', $response->message_text);
+            return Redirect::to('/admin/product/list_products');
+        } else {
+            Session::flash('error_message', $response->message_text);
+            return Redirect::to('/admin/product/list_products');
+        }
     }
 
     public function updateProduct(Request $request, $id)
@@ -153,25 +163,31 @@ class ProductController extends Controller
         $subCategory = $request->get('subcategory');
         $productName = $request->get('productname');
         $descripton = $request->get('description');
-        $productImage = $request->get('newImage');
+        $productImage = $request->file('newImage');
         $price = $request->get('price');
         $lastModifiedBy = Session::get('user_data')->admin_id;
-
+        
+        $path = public_path('/api/uploads');
+        $productImage->move($path, $productImage->getClientOriginalName());
+        $productImagePath = url('api/uploads/' . $productImage->getClientOriginalName());
+        
         $response = $this->toolbxAPI->post('product/update', '', [
             'id' => $id,
             'Category' => $category,
             'SubCategory' => $subCategory,
             'ProductName' => $productName,
             'Description' => $descripton,
-            'Image' => $productImage,
+            'Image' => $productImagePath,
             'Price' => $price,
             'LastModifiedBy' => $lastModifiedBy,
         ]);
 
-        if( $response->message_code == 1000 )
-        {
+        if( $response->message_code == 1000) {
             Session::flash('success_msg', $response->message_text);
-            return Redirect::to('admin/product/list_products');
+            return Redirect::to('/admin/product/list_products');
+        } else {
+            Session::flash('error_message', $response->message_text);
+            return Redirect::to('/admin/product/list_products');
         }
     }
 
