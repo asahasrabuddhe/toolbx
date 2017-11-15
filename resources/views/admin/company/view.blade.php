@@ -110,10 +110,13 @@
     <script>
         $(document).ready(function(){
             $('#tblOrders').DataTable({
+                'ordering': false,
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': true,
+                'lengthChange': false,
+                'pageLength': 5,
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/orders') }}',
                     type: 'get',
@@ -136,11 +139,11 @@
                     {
                         'data': 'ProductName',
                         'render': function( data, type, row, meta ) {
-                            var col = '<ul>';
+                            var col = '<div style="height: 75px; overflow-y: scroll;"><ul>';
                             $.each(data.split(','), function(i, v){
                                 col += '<li>' + v + '</li>';
                             });
-                            col += '</ul>'
+                            col += '</ul></div>'
                             return col;
                         }
                     },

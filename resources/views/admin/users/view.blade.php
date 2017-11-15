@@ -46,11 +46,12 @@
                     <table class="table" id="users">
                         <thead>
                             <tr>
-                                <th class="clsleftheader">ORDER NUMBER</th>
-                                <th class="clsheader">COMPANY NAME</th>
-                                <th class="clsheader">TOTAL AMOUNT</th>
+                                <th class="clsleftheader">DATE PURCHASED</th>
+                                <th class="clsheader">ORDER NO. - JOB SITE NAME</th>
+                                <th class="clsheader">TOTAL AMOUNT IN $</th>
                                 <th class="clsheader">ORDER DETAILS</th>
-                                <th class="clsrightheader">STATUS</th>
+                                <th class="clsheader">VIEW</th>
+                                <th class="clsrightheader"><input type="checkbox" id="checkall"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -65,28 +66,55 @@
     <script>
         $(document).ready(function(){
             $('#users').DataTable({
+                'ordering': false,
+                'searching': false,
                 'processing': true,
                 'serverSide': true,
+                'autoWidth': true,
+                'lengthChange': false,
+                'pageLength': 5,
                 'ajax': {
                     url: '{{ url('/runners/' . Request::route('id')) }}',
                     type: 'get',
                 },
                 'columns': [
-                    {'data': 'OrderId'},
-                    {'data': 'CompanyName'},
+                    {
+                        'data': 'OrderDate',
+                        'render': function( data, type, row, meta ) {
+                            var date = new Date(data);
+                            return date.toLocaleDateString('en-CA');
+                        }
+                    },
+                    {
+                        'data': 'OrderId',
+                        'render': function( data, type, row, meta ) {
+                            return data + ' - ' + row['JobSiteName'];
+                        }
+                    },
                     {'data': 'TotalAmount'},
                     {
                         'data': 'ProductName',
                         'render': function( data, type, row, meta ) {
-                            var col = '<ul>';
+                            var col = '<div style="height: 75px; overflow-y: scroll;"><ul>';
                             $.each(data.split(','), function(i, v){
                                 col += '<li>' + v + '</li>';
                             });
-                            col += '</ul>'
+                            col += '</ul></div>'
                             return col;
-                        }   
+                        }
                     },
-                    {'data': 'status'},
+                    {
+                        'data': 'OrderId',
+                        'render': function( data, type, row, meta ) {
+                            return '<a href="{{ url('admin/order') }}/' + data + '/view' + '" ><img src="{{ asset('images/view.png') }}" width="20" height="17"></a>'
+                        }
+                    },
+                    {
+                        'data': 'OrderId',
+                        'render': function( data, type, row, meta ) {
+                            return '<input type="checkbox" id="' + data + '">';
+                        }
+                    }
                 ]
             });
         });

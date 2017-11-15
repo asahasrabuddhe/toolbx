@@ -84,22 +84,39 @@ class RunnerController extends Controller
         $total = DB::table('tbl_order')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->where('tbl_runner_order.RunnerId', $id)
-                        ->where( 'tbl_order.display','Y')
-                        ->orderBy('tbl_order.OrderId', 'DESC')
-                        ->count();
+                        ->orderBy('tbl_order.OrderId', 'DESC')->count();
 
         $runners = DB::table('tbl_order')
+                        ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
+                        ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
+                        ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                        ->join('tbl_registration', 'tbl_runner_order.RunnerId', '=', 'tbl_registration.RegistrationId')
-                        ->join('tbl_companies', 'tbl_companies.CompanyId', '=', 'tbl_order.CompanyId')
-                        ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
-                        ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
-                        ->selectRaw('tbl_order.OrderId, tbl_companies.CompanyName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName, tbl_order.status' )
+                        ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
                         ->offset($start)->limit($length)
-                        ->where('tbl_registration.RegistrationId', $id)
-                        ->where( 'tbl_order.display','Y')
+                        ->where('tbl_runner_order.RunnerId', $id)
                         ->orderBy('tbl_order.OrderId', 'DESC')
-                        ->groupBy('tbl_order.OrderId')->get();
+                        ->groupBy('tbl_order.OrderId')
+                        ->get();
+
+        // $total = DB::table('tbl_order')
+        //                 ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+        //                 ->where('tbl_runner_order.RunnerId', $id)
+        //                 ->where( 'tbl_order.display','Y')
+        //                 ->orderBy('tbl_order.OrderId', 'DESC')
+        //                 ->count();
+
+        // $runners = DB::table('tbl_order')
+        //                 ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+        //                 ->join('tbl_registration', 'tbl_runner_order.RunnerId', '=', 'tbl_registration.RegistrationId')
+        //                 ->join('tbl_companies', 'tbl_companies.CompanyId', '=', 'tbl_order.CompanyId')
+        //                 ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
+        //                 ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
+        //                 ->selectRaw('tbl_order.OrderId, tbl_companies.CompanyName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName, tbl_order.status' )
+        //                 ->offset($start)->limit($length)
+        //                 ->where('tbl_registration.RegistrationId', $id)
+        //                 ->where( 'tbl_order.display','Y')
+        //                 ->orderBy('tbl_order.OrderId', 'DESC')
+        //                 ->groupBy('tbl_order.OrderId')->get();
         
         $data = [
             'draw' => $draw,
