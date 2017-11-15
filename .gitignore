@@ -2,6 +2,7 @@
 /public
 /public/js
 /public/css
+/public/api
 /public/*.*
 /public/hot
 /public/storage
