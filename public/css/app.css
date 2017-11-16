@@ -8473,7 +8473,7 @@ input[type=password] {
   border-radius: 8px;
   height: 40px;
   font-size: 16px;
-  background-color: #0099cc;
+  background-color: #E6B720;
   border: none;
   color: #fff;
   font-weight: 600;
@@ -8483,7 +8483,7 @@ input[type=password] {
 .btnlogin:hover,
 .btncontinue:hover,
 .btnsubmit:hover {
-  background-color: #0099cc;
+  background-color: #E6B720;
   color: #ffffff;
 }
 

@@ -144,7 +144,13 @@ class ProductController extends Controller
             'CreatedBy' => $createdBy,
         ]);
 
-        return response()->json($response);
+        if( $response->message_code == 1000) {
+            Session::flash('success_msg', $message_text);
+            Redirect::to('/admin/product/list_products');
+        } else {
+            Session::flash('error_message', $message_text);
+            Redirect::to('/admin/product/list_products');
+        }
     }
 
     public function updateProduct(Request $request, $id)
