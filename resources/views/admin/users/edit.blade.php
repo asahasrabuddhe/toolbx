@@ -45,7 +45,7 @@
                                     <input class="form-control" placeholder="" required="" name="name" type="text" value="{{ $user_info->RegistrationName or '' }}">
                                 </div>
                             </div>
-                            @if(Request::is('/admin/user/*') || Request::is('admin/employee/*') || Request::is('admin/owner/*'))
+                            @if(Request::is('admin/user/*') || Request::is('admin/employee/*') || Request::is('admin/owner/*'))
                             <div class="row">
                                 <div class="col-sm-4 labelalign">
                                     <label>PHONE NUMBER</label>
