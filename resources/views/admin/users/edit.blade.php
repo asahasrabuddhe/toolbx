@@ -26,7 +26,7 @@
                         <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT USER</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/runners/' . Request::route('id') . '/update') }}" method="post">
                     @elseif(Request::is('admin/employee/*'))
-                        <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT EMPLOYEE</label></h4>
+                        <h4><img onclick="window.location.assign('{{ url()->previous() }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT EMPLOYEE</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/employee/' . Request::route('id') . '/update') }}" method="post">
                     @elseif(Request::is('admin/owner/*'))
                         <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT OWNER</label></h4>
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="form-group col-sm-8">
                                         @if(Request::is('admin/employee/*'))
-                                            <input class="form-control" placeholder="" readonly disabled required="" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
+                                            <input class="form-control" placeholder="" required="" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">
                                             <input type="hidden" name="type" value="employee">
                                         @elseif(Request::is('admin/owner/*'))
                                             <input class="form-control" placeholder="" required="" type="text" name="company" value="{{ $user_info->CompanyName or '' }}">

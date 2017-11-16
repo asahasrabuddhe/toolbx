@@ -73,7 +73,7 @@
                         <div id="employees" class="tab-pane fade">
                             <div class="row">
                                 <div class="col-sm-offset-9 col-sm-3 pull-right" style="text-align: right;margin-bottom: 10px;">
-                                    <a href="{{ url('admin/employee/invite') }}" class="pull-right" style="text-decoration: none;margin-right: -6%;"> + INVITE EMPLOYEE </a>
+                                    <a href="{{ url('admin/employee/invite') }}" class="pull-right" style="text-decoration: none;margin-right: -6%; color: #000"> + INVITE EMPLOYEE </a>
                                 </div>
                             </div>
                             <table class="table" id="tblEmployees" style="width: 100% !important">
@@ -90,7 +90,11 @@
                             </table>
                         </div>
                         <div id="owner" class="tab-pane fade">
-                            <div class="row">&nbsp;</div>
+                            <div class="row">
+                                <div class="col-sm-offset-9 col-sm-3 pull-right" style="text-align: right;margin-bottom: 10px;">
+                                    <a href="{{ url('admin/owner/invite') }}" class="pull-right" style="text-decoration: none;margin-right: -6%; color: #000"> + INVITE OWNER </a>
+                                </div>
+                            </div>
                             <table class="table" id="tblOwner" style="width: 100% !important">
                                 <thead>
                                     <tr>
@@ -209,6 +213,7 @@
                 onSelect: function(selectedDate){
                     $('#to_date').datepicker('option', 'minDate', selectedDate);
                     tblOrders.draw();
+                    tblPayment.draw();
                 }
             });
             $('#to_date').datepicker({
@@ -217,6 +222,7 @@
                 dateFormat: 'M d, yy',
                 onSelect: function() {
                     tblOrders.draw();
+                    tblPayment.draw();
                 }
             });
             $('.input-group-addon').on('click', function() {
@@ -251,10 +257,11 @@
                 });
             });
             $('.nav.nav-tabs li a').on('click', function() {
-                if( $(this).html() == 'ORDERS' ) {
+                if( $(this).html() == 'ORDERS' || $(this).html() == 'PAYMENT' ) {
                     $('.col-sm-6.date').show();
                     $('.col-sm-2.export').show();
-                    $('.col-sm-2.selectall').show();
+                    if( $(this).html() == 'ORDERS' )
+                        $('.col-sm-2.selectall').show();
                 } else {
                     $('.col-sm-6.date').hide();
                     $('.col-sm-2.export').hide();
@@ -318,13 +325,17 @@
                     },
                 ]
             });
-            $('#tblPayment').DataTable({
+            var tblPayment = $('#tblPayment').DataTable({
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/payments')  }}',
                     type: 'get',
+                    data: function(d) {
+                        d.fromDate = $('#from_date').val(),
+                        d.toDate = $('#to_date').val()
+                    }
                 },
                 'columns': [
                     {
@@ -336,7 +347,12 @@
                     },
                     {'data': 'OrderId'},
                     {'data': 'CardStripTokan'},
-                    {'data': 'TotalAmount'}                    
+                    {
+                        'data': 'TotalAmount',
+                        'render': function( data, type, row, meta ) {
+                            return '$' + data;
+                        }
+                    }                    
                 ]
             });
         });

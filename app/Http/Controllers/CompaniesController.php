@@ -248,12 +248,16 @@ class CompaniesController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
 
-        $total = DB::table('tbl_order')->join('tbl_payments', 'tbl_payments.OrderId', 'tbl_order.OrderId')->where('tbl_order.CompanyId',$id)->count();
+        $fromDate = date('Y:m:d H:i:s', strtotime($request->get('fromDate')));
+        $toDate = date('Y:m:d H:i:s', strtotime($request->get('toDate')));
+
+        $total = DB::table('tbl_order')->join('tbl_payments', 'tbl_payments.OrderId', 'tbl_order.OrderId')->where('tbl_order.CompanyId',$id)->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])->count();
 
         $runners = DB::table('tbl_order')
                         ->join('tbl_payments', 'tbl_payments.OrderId', 'tbl_order.OrderId')
                         ->select('tbl_payments.PaymentDate', 'tbl_payments.OrderId', 'tbl_payments.CardStripTokan', 'tbl_payments.TotalAmount')
                         ->offset($start)->limit($length)
+                        ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
                         ->where('tbl_order.CompanyId',$id)
                         ->get();
         $data = [
