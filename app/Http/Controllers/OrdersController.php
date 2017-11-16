@@ -69,40 +69,77 @@ class OrdersController extends Controller
 
     public function getAllOrdersCsv(Request $request)
     {
-        $fromDate = date('Y:m:d H:i:s', strtotime($request->query('from_date')));
-        $toDate = date('Y:m:d H:i:s', strtotime($request->query('to_date')));
-        $ids = explode(',', $request->query('ids'));
+        $fromDate = date('Y:m:d', strtotime($request->query('from_date'))) . ' 00:00:01';
+        $toDate = date('Y:m:d', strtotime($request->query('to_date'))) . ' 23:59:59';
+        $ids = explode(',', $request->query('ids') );
+
+        $company = $request->query('company');
 
         if( isset($fromDate) && isset($toDate) ) {
-            if( is_array($ids) )
-            {
-                $orders = DB::table('tbl_order')
-                        ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
-                        ->where( 'tbl_order.display','Y')
-                        ->whereBetween('OrderDate', [$fromDate, $toDate])
-                        ->whereIn('tbl_order.OrderId', $ids)
-                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
+            if( NULL !==  $request->query('ids') ) {
+                if( NULL !== $company ) {
+                    $orders = DB::table('tbl_order')
+                                ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                                ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                                ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                                ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                                ->where( 'tbl_order.display','Y')
+                                ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
+                                ->whereIn('tbl_order.OrderId', $ids)
+                                ->where('tbl_order.CompanyId', $company)
+                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                } else {
+                    $orders = DB::table('tbl_order')
+                                ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                                ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                                ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                                ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                                ->where( 'tbl_order.display','Y')
+                                ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
+                                ->whereIn('tbl_order.OrderId', $ids)
+                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                }
             } else {
-                $orders = DB::table('tbl_order')
-                            ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                            ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                            ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                            ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
-                            ->where( 'tbl_order.display','Y')
-                            ->whereBetween('OrderDate', [$fromDate, $toDate])
-                            ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                if( NULL !== $company) {
+                    $orders = DB::table('tbl_order')
+                                ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                                ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                                ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                                ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                                ->where( 'tbl_order.display','Y')
+                                ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
+                                ->where('tbl_order.CompanyId', $company)
+                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                } else {
+                    $orders = DB::table('tbl_order')
+                                    ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                                    ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                                    ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                                    ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                                    ->where( 'tbl_order.display','Y')
+                                    ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
+                                    ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                }
             }
         } else {
-            $orders = DB::table('tbl_order')
+           if ( NULL != $company ) {
+                 $orders = DB::table('tbl_order')
+                        ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
+                        ->where( 'tbl_order.display','Y')
+                        ->where('tbl_order.CompanyId', $company)
+                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
+           } else {
+                 $orders = DB::table('tbl_order')
                         ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
                         ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->join('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
                         ->select('tbl_order.OrderId', 'tbl_jobsite.JobSiteName', 'tbl_order.TotalAmount', 'tbl_order.OrderDate', 'tbl_registration.RegistrationName', 'tbl_order.OrderDate', 'tbl_order.status')
                         ->where( 'tbl_order.display','Y')
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
+           }
         }
         
         ini_set('auto_detect_line_endings', true);

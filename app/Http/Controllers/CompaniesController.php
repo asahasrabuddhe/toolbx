@@ -148,21 +148,40 @@ class CompaniesController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
 
+        $fromDate = date('Y:m:d H:i:s', strtotime($request->get('fromDate')));
+        $toDate = date('Y:m:d H:i:s', strtotime($request->get('toDate')));
+
         $total = DB::table('tbl_order')->where('tbl_order.CompanyId',$id)->count();
 
-        $runners = DB::table('tbl_order')
-                        ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
-                        ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
-                        ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
-                        ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
-                        ->offset($start)->limit($length)
-                        ->where('tbl_order.CompanyId',$id)
-                        ->groupBy('tbl_order.OrderId')
-                        ->get();
+        if( isset($fromDate) && isset($toDate) ) {
+            $filtered  = DB::table('tbl_order')->where('tbl_order.CompanyId',$id)->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])->count();
+            $runners = DB::table('tbl_order')
+                            ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
+                            ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
+                            ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
+                            ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
+                            ->offset($start)->limit($length)
+                            ->where('tbl_order.CompanyId',$id)
+                            ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
+                            ->groupBy('tbl_order.OrderId')
+                            ->get();
+        } else {
+            $filtered = $total;
+            $runners = DB::table('tbl_order')
+                            ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
+                            ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
+                            ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
+                            ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
+                            ->offset($start)->limit($length)
+                            ->where('tbl_order.CompanyId',$id)
+                            ->groupBy('tbl_order.OrderId')
+                            ->get();
+        }
+
         $data = [
             'draw' => $draw,
             'recordsTotal' => $total,
-            'recordsFiltered' => $total,
+            'recordsFiltered' => $filtered,
             'data' => $runners->toArray()
         ];
 

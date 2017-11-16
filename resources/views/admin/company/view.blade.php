@@ -2,6 +2,7 @@
 @section('title', 'View Company - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -14,13 +15,44 @@
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
-                    <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>VIEW COMPANY</label></h4>
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#orders">ORDERS</a></li>
-                        <li><a data-toggle="tab" href="#employees">EMPLOYEES</a></li>
-                        <li><a data-toggle="tab" href="#owner">OWNER</a></li>
-                        <li><a data-toggle="tab" href="#payment">PAYMENT</a></li>
-                    </ul>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4><img onclick="window.location.assign('{{ url('/admin/company/list_companies') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>VIEW COMPANY</label></h4>
+                        </div>
+                        <div class="col-sm-6 date" style="text-align: right;background:#EEEEEE;padding: 5px;">
+                            <div class="col-sm-6 npl">
+                                <div class="input-group from">
+                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 npr">
+                                <div class="input-group to">
+                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y', strtotime('+7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 export">
+                            <a href="" id="export" class="form-control">EXPORT</a>
+                        </div>
+                    </div>
+                    <div class="clearfix" style="padding-bottom: 15px"></div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#orders">ORDERS</a></li>
+                                <li><a data-toggle="tab" href="#employees">EMPLOYEES</a></li>
+                                <li><a data-toggle="tab" href="#owner">OWNER</a></li>
+                                <li><a data-toggle="tab" href="#payment">PAYMENT</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-offset-2 col-sm-2 selectall">
+                            <div class="form-group">
+                                <label>SELECT ALL</label>
+                                <input type="checkbox" id="checkall">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
                     <div class="tab-content">
                         <div id="orders" class="tab-pane fade in active">
                             <div class="row">&nbsp;</div>
@@ -31,8 +63,8 @@
                                         <th class="clsheader">ORDER NO. - JOB SITE NAME</th>
                                         <th class="clsheader">TOTAL AMOUNT IN $</th>
                                         <th class="clsheader">ORDER DETAILS</th>
-                                        <th class="clsrightheader">VIEW</th>
-                                        <th class="clsrightheader"><input type="checkbox" id="ordersSelectAll"></th>
+                                        <th class="clsheader">VIEW</th>
+                                        <th class="clsrightheader">SELECT</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -106,10 +138,14 @@
     </div>
 </div>
 @endsection
+@section('scripts-top')
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ asset('js/download.js') }}"></script>
+@endsection
 @section('scripts')
     <script>
         $(document).ready(function(){
-            $('#tblOrders').DataTable({
+            var tblOrders = $('#tblOrders').DataTable({
                 'ordering': false,
                 'searching': false,
                 'processing': true,
@@ -120,6 +156,10 @@
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/orders') }}',
                     type: 'get',
+                    data: function(d) {
+                        d.fromDate = $('#from_date').val(),
+                        d.toDate = $('#to_date').val()
+                    }
                 },
                 'columns': [
                     {
@@ -160,6 +200,69 @@
                         }
                     }
                 ]
+            });
+            $('#from_date').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                maxDate: new Date,
+                onSelect: function(selectedDate){
+                    $('#to_date').datepicker('option', 'minDate', selectedDate);
+                    tblOrders.draw();
+                }
+            });
+            $('#to_date').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                onSelect: function() {
+                    tblOrders.draw();
+                }
+            });
+            $('.input-group-addon').on('click', function() {
+                $(this).parent().find('input').datepicker().focus();
+            });
+            $('#checkall').on('click', function(e) {
+                $('tbody').find('input').trigger('click');
+            });
+            $('#export').on('click', function(e) {
+                e.preventDefault();
+                // ADD LOGIC FOR SELECTED RECORDS
+                var ids = [];
+                $.each($('tbody input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
+
+                var f = $('#from_date').datepicker('getDate').toISOString();
+                var t = $('#to_date').datepicker('getDate').toISOString();
+
+                var url = "{{ url('admin/orders/export') }}" + "?from_date=" + f + "&to_date=" + t;
+                if(ids.length)
+                    url += "&ids=" + ids.join(',');
+                url += "&company=" + "{{ Request::route('id') }}"
+                $.ajax({
+                    type: 'GET',
+                    url:  url,
+                    dataType: 'json',
+                    success: function(data) {
+                    download(data.data_text, 'export.csv', 'text/csv');
+                    },
+                    error: function(error) {
+                    console.log(error);
+                    }
+                });
+            });
+            $('.nav.nav-tabs li a').on('click', function() {
+                if( $(this).html() == 'ORDERS' ) {
+                    $('.col-sm-6.date').show();
+                    $('.col-sm-2.export').show();
+                    $('.col-sm-2.selectall').show();
+                } else {
+                    $('.col-sm-6.date').hide();
+                    $('.col-sm-2.export').hide();
+                    $('.col-sm-2.selectall').hide();
+                }
+            });
+            $('#checkall').on('click', function(e) {
+                $('tbody').find('input').trigger('click');
             });
             $('#tblEmployees').DataTable({
                 'searching': false,
