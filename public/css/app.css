@@ -8559,7 +8559,7 @@ ul.sidenav-menu li.active {
 }
 
 ul.sidenav-menu li a {
-  color: #fff;
+  color: #000;
   font-weight: 500;
   font-size: 15px;
 }
@@ -8939,6 +8939,28 @@ ul.dropdown-menu li a {
 .cp-remmarlabel {
   margin-top: 50px !important;
 }
+
+/**
+ * UI FIXES
+ */
+
+.custom-search span i {
+  padding-left: 10px;
+}
+
+.custom-search input {
+  border-left: none;
+  background-color: #eeeeee;
+}
+
+.custom-search .form-control:focus {
+  border-color: #ccd0d2;
+  outline: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+/** END UI FIXES */
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   ::i-block-chrome,

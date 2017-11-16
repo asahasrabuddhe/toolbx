@@ -24,11 +24,15 @@
                             <h4><label>RUNNERS</label></h4>
                         </div>
                         <div class="col-sm-6">
+                            <div class="input-group custom-search">
+                                <span class="input-group-addon">SEARCH <i class="glyphicon glyphicon-search"></i></span>
+                                <input id="search" type="text" class="form-control" name="search" placeholder="">
+                            </div>
                         </div>           
                     </div>
                     <div class="row">
                         <div class="col-sm-offset-9 col-sm-3" style="text-align: right;margin-bottom: 10px;">
-                            <a href="{{ url('admin/user/invite') }}" style="text-decoration: none;margin-right: -6%;"> + INVITE RUNNER </a>
+                            <a href="{{ url('admin/user/invite') }}" style="text-decoration: none;margin-right: -6%; color: #000"> + INVITE RUNNER </a>
                         </div>
                     </div>    
                     <table class="table" id="users">
@@ -77,7 +81,8 @@
 @section('scripts')
     <script>
         $(document).ready(function(){
-            $('#users').DataTable({
+            var table = $('#users').DataTable({
+                'dom': '<l<t>ip>',
                 'processing': true,
                 'serverSide': true,
                 'ajax': {
@@ -107,6 +112,9 @@
                         }
                     },
                 ]
+            });
+            $('#search').keyup(function() {
+                table.search($(this).val()).draw();
             });
         });
     </script>
