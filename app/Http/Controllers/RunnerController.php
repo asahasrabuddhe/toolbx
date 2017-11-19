@@ -63,8 +63,10 @@ class RunnerController extends Controller
         $response = $this->toolbxAPI->post('user/invitation', '', [
             'Name' => $request->get('name'),
             'PhoneNo' => $request->get('phonenumber'),
-            'Email' => $request->get('email')
+            'Email' => $request->get('email'),
+	    'Role' => 3
         ]);
+
 
         if( $response === NULL ) {
             Session::flash('success_msg','Runner Invitation Sent successfully');
