@@ -22,12 +22,12 @@
                         <div class="col-sm-6 date" style="text-align: right;background:#EEEEEE;padding: 5px;">
                             <div class="col-sm-6 npl">
                                 <div class="input-group from">
-                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y', strtotime('-7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                             <div class="col-sm-6 npr">
                                 <div class="input-group to">
-                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y', strtotime('+7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
 
                                 </div>
                                 <div class="col-md-3">
-                                    EXPORT
+                                    <!-- EXPORT -->
                                 </div>
                                 <div class="col-md-3">
                                     LOGIN TO STRIPE
@@ -136,6 +136,14 @@
                             </table>
                         </div>
                     </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal" id="myModal-employee" role="dialog" title="Delete Message">
+                    Do you want to delete this Employee?
+                </div>
+                <!-- Modal -->
+                <div class="modal" id="myModal-owner" role="dialog" title="Delete Message">
+                    Do you want to delete this Owner?
                 </div>
             </div>
         </div>
@@ -157,6 +165,11 @@
                 'autoWidth': true,
                 'lengthChange': false,
                 'pageLength': 5,
+                'stateSave': true,
+                'stateDuration': -1,
+                'stateSaveParams': function (settings, data) {
+                    data.search.search = '';
+                },
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/orders') }}',
                     type: 'get',
@@ -237,8 +250,8 @@
                 var ids = [];
                 $.each($('tbody input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
 
-                var f = $('#from_date').datepicker('getDate').toISOString();
-                var t = $('#to_date').datepicker('getDate').toISOString();
+                var f = $('#from_date').val();
+                var t = $('#to_date').val();
 
                 var url = "{{ url('admin/orders/export') }}" + "?from_date=" + f + "&to_date=" + t;
                 if(ids.length)
@@ -268,14 +281,13 @@
                     $('.col-sm-2.selectall').hide();
                 }
             });
-            $('#checkall').on('click', function(e) {
-                $('tbody').find('input').trigger('click');
-            });
             $('#tblEmployees').DataTable({
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': true,
+                'stateSave': true,
+                'stateDuration': -1,
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/employees' ) }}',
                     type: 'get',
@@ -293,16 +305,19 @@
                     {
                         'data': 'RegistrationId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="/admin/employee/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
+                            return '<a id="delete-employee" data-val="' + data + '"><img src="{{ asset('images/delete-icon.png') }}"></a>';
                         }
                     },
                 ]
             });
+
             $('#tblOwner').DataTable({
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': true,
+                'stateSave': true,
+                'stateDuration': -1,
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') .  '/owners') }}',
                     type: 'get',
@@ -320,15 +335,18 @@
                     {
                         'data': 'RegistrationId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="/admin/owner/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
+                            return '<a id="delete-owner" data-val="' + data + '"><img src="{{ asset('images/delete-icon.png') }}"></a>';
                         }
                     },
                 ]
             });
+
             var tblPayment = $('#tblPayment').DataTable({
                 'searching': false,
                 'processing': true,
                 'serverSide': true,
+                'stateSave': true,
+                'stateDuration': -1,
                 'ajax': {
                     url: '{{ url('/company/' . Request::route('id') . '/payments')  }}',
                     type: 'get',
@@ -354,6 +372,38 @@
                         }
                     }                    
                 ]
+            });
+
+            $('body').on('click', '#delete-employee', function() {
+                var id = $(this).attr('data-val');
+                $( "#myModal-employee" ).dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                                window.location.href = "{{ url('/admin/employee' ) }}/" + id + '/delete';
+                            },
+                        Cancel: function() {
+                            $( this ).dialog( 'close' );
+                        }
+                    }
+                });
+            });
+
+            $('body').on('click', '#delete-owner', function() {
+                var id = $(this).attr('data-val');
+                $( "#myModal-owner" ).dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                                window.location.href = "{{ url('/admin/owner' ) }}/" + id + '/delete';
+                            },
+                        Cancel: function() {
+                            $( this ).dialog( 'close' );
+                        }
+                    }
+                });
             });
         });
     </script>

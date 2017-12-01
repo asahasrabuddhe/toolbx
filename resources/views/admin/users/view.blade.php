@@ -50,6 +50,7 @@
                                 <th class="clsheader">ORDER NO. - JOB SITE NAME</th>
                                 <th class="clsheader">TOTAL AMOUNT IN $</th>
                                 <th class="clsheader">ORDER DETAILS</th>
+                                <th class="clsheader">ORDER STATUS</th>
                                 <th class="clsheader">VIEW</th>
                                 <th class="clsrightheader"><input type="checkbox" id="checkall"></th>
                             </tr>
@@ -102,6 +103,9 @@
                             col += '</ul></div>'
                             return col;
                         }
+                    },
+                    {
+                        'data':'status'
                     },
                     {
                         'data': 'OrderId',

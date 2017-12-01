@@ -2,6 +2,7 @@
 @section('title', 'List Users - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -51,32 +52,16 @@
                     </table>
                 </div>
                 <!-- Modal -->
-                <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog modal-sm">
-                        <div class="modal-content">                            
-                            <div class="modal-header">                            
-                                <p style="text-align: center;"><b>DELETE MESSAGE</b></p>                             
-                            </div>                            
-                            <div class="modal-body">                            
-                                <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>                             
-                            </div>
-                            <div class="modal-footer" style="margin-bottom:-19px">
-                                <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
-                                    <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
-                                        <button type="button" class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;">NO</button>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">                                               
-                                    <a href="" id="button123" class="btn btn-info" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>
-                                </div>           
-                            </div>
-                        </div>
-                    </div>
+                <div class="modal" id="myModal" role="dialog" title="Delete Message">
+                    Do you want to delete this Runner?
                 </div>
             </div> 
         </div>
     </div>
 </div>
+@endsection
+@section('scripts-top')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 @endsection
 @section('scripts')
     <script>
@@ -85,6 +70,11 @@
                 'dom': '<l<t>ip>',
                 'processing': true,
                 'serverSide': true,
+                'stateSave': true,
+                'stateDuration': -1,
+                'stateSaveParams': function (settings, data) {
+                    data.search.search = '';
+                },
                 'ajax': {
                     url: '/runners',
                     type: 'get'
@@ -108,13 +98,28 @@
                     {
                         'data': 'RegistrationId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="/admin/user/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
+                            return '<a id="delete" data-val="' + data + '"><img src="{{ asset('images/delete-icon.png') }}"></a>';
                         }
                     },
                 ]
             });
             $('#search').keyup(function() {
                 table.search($(this).val()).draw();
+            });
+            $('body').on('click', '#delete', function() {
+                var id = $(this).attr('data-val');
+                $( "#myModal" ).dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                                window.location.href = "{{ url('/admin/user' ) }}/" + id + '/delete';
+                            },
+                        Cancel: function() {
+                            $( this ).dialog( 'close' );
+                        }
+                    }
+                });
             });
         });
     </script>

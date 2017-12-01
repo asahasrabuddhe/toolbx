@@ -1,4 +1,4 @@
-@extends('includes.layouts.main')
+@extends('includes.layouts.main', ['bodyClass' => 'bodybg', 'index' => 'true'])
 @section('title', 'Change Password - ToolBX Admin')
 @section('styles')
 <style>

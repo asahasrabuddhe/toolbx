@@ -19,7 +19,7 @@
                         <label style="margin-left:;"></label>
                         <h4><label style="margin-left:;"><img onclick="window.location.assign('{{ url('admin/product/list_products') }}')" src="{{  asset('images/arrow_16.png')  }}" style="cursor: pointer;"> &nbsp; <label>ADD PRODUCT</label></label></h4>
                     </div>
-                    <form action="{{  url('products')  }}" class="col-sm-9" method="post" style="background-color:#ffffff;">
+                    <form action="{{  url('products')  }}" class="col-sm-9"  method="post" style="background-color:#ffffff;" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="row">
                             <div class="col-sm-4 labelalign">
@@ -72,9 +72,33 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MANUFACTURER</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="manufacturer" placeholder="" type="text" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MODEL</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="model" placeholder="" type="text" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>SKU</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="sku" placeholder="" type="text" value="">
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-sm-offset-4 col-sm-7">
                                 <div class="col-sm-6">
-                                    <button class="form-control btn-default btn-gray" onclick="window.location.assign('http://toolbx.applabb.ca/admin/list_products')" style="margin-left: -15px;width: 135px;" type="reset">CANCEL</button>
+                                    <button class="form-control btn-default btn-gray" onclick="window.location.assign('{{ url('admin/product/list_products') }}')" style="margin-left: -15px;width: 135px;" type="reset">CANCEL</button>
                                 </div>
                                 <div class="col-sm-6">
                                     <button class="form-control btn-default btn-blue common" name="submit" style="margin-left: -15px;width: 135px;" type="submit">ADD</button>

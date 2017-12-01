@@ -1,15 +1,21 @@
-@extends('includes.layouts.main', ['bodyClass' => 'bodybg'])
+@extends('includes.layouts.main', ['bodyClass' => 'bodybg', 'index' => 'true'])
 @section('title', 'Forgot Password - ToolBX')
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
             <form method="post" id="login-form" novalidate="novalidate">
+            	{{ csrf_field() }}
                 <div class="row forgotpasswordscreen">
 					<div class="text-center"> 
 					    <img src="{{ asset('images/toolboxlogo_temp.png') }}" class="img-responsive" style="margin:auto;">
 					</div>
 					<div class="forgotpass_lblforgotpassword"> FORGOT PASSWORD</div>
+					@if(Session::get('success_msg'))
+	                    <div class="alert alert-success">{{ Session::get('success_msg') }}</div>
+	                @elseif(Session::get('error_msg'))
+	                    <div class="alert alert-danger">{{ Session::get('error_msg') }}</div>
+	                @endif
 					<form name="forgot_password" id="forgot_password" class="form-horizontal" method="post" novalidate="novalidate" _lpchecked="1">
                         <div class="form-group">
                             <input type="email" class="form-control" name="email" id="email" placeholder="ENTER YOUR EMAIL ADDRESS" required="" title="please enter valid email address">

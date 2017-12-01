@@ -23,11 +23,6 @@ body{
 	padding-left: 0 !important;
 }
 
-.content, .content .data-table {
-    padding-bottom: 0px !important;
-}
-
-
 .footer {
     background-color: #262626;
     text-align: center;
@@ -38,9 +33,8 @@ body{
     margin: auto;
     width:100%;
     float: left;
-    /*position:relative;
-    width:59.9%;*/
-    position:absolute;
+    position:relative;
+    // width:59.9%;
 }
 
 .clsleftheader {
@@ -666,7 +660,65 @@ a#export {
     text-decoration: none;
     background-color: #e6b720;
 }
+
+.sidenav-bg {
+    background: url(/images/menu-baner.png?722572d…);
+    background-size: cover;
+    height: 100rem;
+    margin-bottom: 0;
+}
 /** END UI FIXES */
+
+/** INVOICE START */
+img#invoice {
+    width: 60%;
+}
+
+table#header {
+    width: 100%;
+}
+
+table#header, table#header tr, table#header td {
+    border: 1px solid #000;
+    color: #000;
+}
+
+table#header td:nth-child(1) {
+    text-align: left;
+    background-color: rgb(217,217,217);
+    padding-left: 10px;
+}
+
+table#header td:nth-child(2) {
+    text-align: right;
+    padding-right: 10px;
+}
+table#content {
+    margin-top: 125px;
+    width: 100%;
+}
+
+table#content tr, table#content th, table#content td {
+    border: 1px solid #000;
+    text-align: center;
+}
+
+table#content tr td {
+    color: #000;
+}
+
+table#content thead {
+    background-color: #000;
+}
+
+table#content tfoot tr:nth-child(-n+4), table#content tfoot td:nth-child(-n+3) {
+    border: none
+}
+
+table#content tfoot td:nth-child(4) {
+    background-color: rgb(217, 217, 217);
+}   
+/** INVOICE END */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) { 
 ::i-block-chrome,.search-cancel-icon { 

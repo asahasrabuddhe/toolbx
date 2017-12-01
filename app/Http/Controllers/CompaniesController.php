@@ -24,8 +24,9 @@ class CompaniesController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
         $search = $request->get('search');
+        $q = $request->get('q');
 
-        if( isset($search['value']) && !empty($search['value'])) {
+        if( ( isset($search['value']) && !empty($search['value']) ) || isset($q) ) {
             $total = DB::table('tbl_companies')
                         ->where( 'display', 'Y')
                         ->where('CompanyName', 'like', '%' . $search['value'] . '%')->count();
@@ -38,6 +39,12 @@ class CompaniesController extends Controller
                         ->orderBy('CompanyId', 'DESC')->get();
         } else {
             $total = DB::table('tbl_companies')->where( 'display', 'Y')->count();
+
+            if( $start == NULL )
+                $start = 0;
+
+            if( $length == NULL )
+                $length = $total;
 
             $runners = DB::table('tbl_companies')
                         ->select('CompanyId', 'CompanyName')
@@ -148,8 +155,8 @@ class CompaniesController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
 
-        $fromDate = date('Y:m:d H:i:s', strtotime($request->get('fromDate')));
-        $toDate = date('Y:m:d H:i:s', strtotime($request->get('toDate')));
+        $fromDate = date('Y-m-d', strtotime($request->query('fromDate'))) . ' 00:00:01';
+        $toDate = date('Y-m-d', strtotime($request->query('toDate'))) . ' 23:59:59';
 
         $total = DB::table('tbl_order')->where('tbl_order.CompanyId',$id)->count();
 
@@ -164,6 +171,7 @@ class CompaniesController extends Controller
                             ->where('tbl_order.CompanyId',$id)
                             ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
                             ->groupBy('tbl_order.OrderId')
+                            ->orderBy('tbl_order.OrderDate', 'DESC')
                             ->get();
         } else {
             $filtered = $total;
@@ -175,6 +183,7 @@ class CompaniesController extends Controller
                             ->offset($start)->limit($length)
                             ->where('tbl_order.CompanyId',$id)
                             ->groupBy('tbl_order.OrderId')
+                            ->orderBy('tbl_order.OrderDate', 'DESC')
                             ->get();
         }
 

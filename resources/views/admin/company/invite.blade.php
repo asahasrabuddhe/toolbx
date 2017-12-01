@@ -1,7 +1,12 @@
 @extends('includes.layouts.main')
-@section('title', 'Invite Owner - ToolBX Admin')
+@if(Request::is('admin/owner/invite'))
+	@section('title', 'Invite Owner - ToolBX Admin')
+@elseif(Request::is('admin/employee/invite'))
+	@section('title', 'Invite Employee - ToolBX Admin')
+@endif
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -14,14 +19,27 @@
             <div class="clearfix"></div>
             <div class="content" id="myDiv">
             	<div class="data-table table-responsive">
-    				<h4><label> INVITE OWNER </label></h4>
+            		@if(Request::is('admin/owner/invite'))
+    					<h4><label> INVITE OWNER </label></h4>
+    				@elseif(Request::is('admin/employee/invite'))
+    					<h4><label> INVITE EMPLOPYEE </label></h4>
+    				@endif
 					<div class="top-form" id="top_form2">
-						<form action="{{ url('admin/owner/invite') }}" method="post" id="form_inv" novalidate="novalidate">
+						@if(Request::is('admin/owner/invite'))
+	    					<form action="{{ url('admin/owner/invite') }}" method="post" id="form_inv" novalidate="novalidate">
+	    				@elseif(Request::is('admin/employee/invite'))
+	    					<form action="{{ url('admin/employee/invite') }}" method="post" id="form_inv" novalidate="novalidate">
+	    					<input type="hidden" name="type" value="employee">
+	    				@endif
 							{{ csrf_field() }}
 							<div class="col-sm-9" style="background-color:#ffffff;">
 							<div class="row">
 				    			<div class="col-sm-5 labelalign">
-				    	    		<label>ENTER OWNER NAME</label>
+				    				@if(Request::is('admin/owner/invite'))
+				    					<label>ENTER OWNER NAME</label>
+				    				@elseif(Request::is('admin/employee/invite'))
+				    					<label>ENTER EMPLOYEE NAME</label>
+				    				@endif
 				    			</div>
 								<div class="form-group col-sm-7">
 									<input type="text" name="name" class="form-control" value="" placeholder="">
@@ -48,7 +66,11 @@
 							        <label>ENTER COMPANY</label>
 							    </div>
 								<div class="form-group col-sm-7">
-									<input type="text" name="company" class="form-control" value="" placeholder="">
+									@if(Request::is('admin/owner/invite'))
+				    					<input type="text" name="company" class="form-control" value="" placeholder="">
+				    				@elseif(Request::is('admin/employee/invite'))
+				    					<select name="company" class="form-control" id="companyId"></select>
+				    				@endif
 								</div>
 							</div>
 							<div class="col-sm-offset-5 col-sm-7">
@@ -83,6 +105,9 @@
    		</div>
 	</div>
 </div>
+@endsection
+@section('scripts-top')
+	<script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
 @endsection
 @section('scripts')
 			<script type="text/javascript">
@@ -144,7 +169,11 @@
 				   $.ajax({
 					   type : 'POST',
 					   data : data,
-					   url  : '{{ url('admin/owner/invite') }}',
+					   @if(Request::is('admin/owner/invite'))
+					   	url  : '{{ url('admin/owner/invite') }}',
+					   @elseif(Request::is('admin/employee/invite'))
+					   	url  : '{{ url('admin/employee/invite') }}',
+					   @endif
 					   beforeSend: function()
 					   {
 						    $("#error").fadeOut();
@@ -182,6 +211,24 @@
     			   });
     			   return false;
 			  }
+			@if(Request::is('admin/employee/invite'))
+				$('#companyId').select2({
+	                placeholder: 'Select Company',
+	                ajax: {
+	                    url: '{{ url('/companies') }}',
+	                    processResults: function (data) {
+				            return {
+				                results: $.map(data.data, function (item) {
+				                    return {
+				                        text: item.CompanyName,
+				                        id: item.CompanyId
+				                    }
+				                })
+				            };
+				        }
+				    }
+	            });
+			@endif
 		  	});
 		</script>
 @endsection

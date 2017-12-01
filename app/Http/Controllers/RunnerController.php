@@ -60,17 +60,31 @@ class RunnerController extends Controller
 
     public function invite(Request $request)
     {
+        $type = $request->get('type');
+
+        if( $type == 'employee' ){
+            $role = 4;
+            $company = $request->get('company');
+        }
+        else {
+            $role = 3;
+            $company = NULL;
+        }
         $response = $this->toolbxAPI->post('user/invitation', '', [
             'Name' => $request->get('name'),
             'PhoneNo' => $request->get('phonenumber'),
             'Email' => $request->get('email'),
-	    'Role' => 3
+            'CompanyName' => $company,
+	       'Role' => $role
         ]);
 
 
         if( $response === NULL ) {
-            Session::flash('success_msg','Runner Invitation Sent successfully');
-            return $msg = 'Runner Invitation Sent successfully';
+            if( $type == 'employee' )
+                Session::flash('success_msg','Employee Invitation Sent successfully');
+            else
+                Session::flash('success_msg','Runner Invitation Sent successfully');
+            return 'Runner Invitation Sent successfully';
         } else {
             Session::flash('success_msg','Email already exist.');
             return $response->message_text;
@@ -84,41 +98,22 @@ class RunnerController extends Controller
         $length = $request->get('length');
 
         $total = DB::table('tbl_order')
-                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
                         ->where('tbl_runner_order.RunnerId', $id)
                         ->orderBy('tbl_order.OrderId', 'DESC')->count();
 
         $runners = DB::table('tbl_order')
-                        ->join('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
-                        ->join('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
-                        ->join('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
-                        ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                        ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName')
+                        ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', 'tbl_order.JobSiteId')
+                        ->leftJoin('tbl_order_details', 'tbl_order_details.OrderId', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_product', 'tbl_product.ProductId', 'tbl_order_details.ProductId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->selectRaw('tbl_order.OrderDate, tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName, (CASE WHEN tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_runner_order.CancelDate IS NOT NULL THEN "Cancelled" ELSE "Pending" END) as status')
                         ->offset($start)->limit($length)
                         ->where('tbl_runner_order.RunnerId', $id)
                         ->orderBy('tbl_order.OrderId', 'DESC')
                         ->groupBy('tbl_order.OrderId')
+                        ->groupBy('tbl_runner_order.CancelDate')
                         ->get();
-
-        // $total = DB::table('tbl_order')
-        //                 ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-        //                 ->where('tbl_runner_order.RunnerId', $id)
-        //                 ->where( 'tbl_order.display','Y')
-        //                 ->orderBy('tbl_order.OrderId', 'DESC')
-        //                 ->count();
-
-        // $runners = DB::table('tbl_order')
-        //                 ->join('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-        //                 ->join('tbl_registration', 'tbl_runner_order.RunnerId', '=', 'tbl_registration.RegistrationId')
-        //                 ->join('tbl_companies', 'tbl_companies.CompanyId', '=', 'tbl_order.CompanyId')
-        //                 ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
-        //                 ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
-        //                 ->selectRaw('tbl_order.OrderId, tbl_companies.CompanyName, tbl_order.TotalAmount, GROUP_CONCAT(tbl_product.ProductName) AS ProductName, tbl_order.status' )
-        //                 ->offset($start)->limit($length)
-        //                 ->where('tbl_registration.RegistrationId', $id)
-        //                 ->where( 'tbl_order.display','Y')
-        //                 ->orderBy('tbl_order.OrderId', 'DESC')
-        //                 ->groupBy('tbl_order.OrderId')->get();
         
         $data = [
             'draw' => $draw,
@@ -176,9 +171,13 @@ class RunnerController extends Controller
 
     public function deleteRunner(Request $request, $id)
     {
+        $r = DB::table('tbl_registration')->select('RegsitrationRoleId')->where('RegistrationId', $id)->first();
         DB::table('tbl_registration')->where('RegistrationId', $id)->delete();
 
-        Session::flash('success_msg', 'Runner Deleted Successfully');
+        $role = ($r->RegsitrationRoleId == 3) ? 'Runner' : 'Employee';
+        $redirect = ($r->RegsitrationRoleId == 3) ? '/admin/user/list_users' : url()->previous();
+
+        Session::flash('success_msg', $role . ' Deleted Successfully');
 
         return Redirect::to('/admin/user/list_users');
     }

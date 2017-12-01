@@ -2,6 +2,7 @@
 @section('title', 'List Companies - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -25,7 +26,12 @@
                         <div class="col-sm-6">
                             <h4><label>COMPANY</label></h4>
                         </div>
-                        <div class="col-sm-6"></div>
+                        <div class="col-sm-6">
+                            <div class="input-group custom-search">
+                                <span class="input-group-addon">SEARCH <i class="glyphicon glyphicon-search"></i></span>
+                                <input id="search" type="text" class="form-control" name="search" placeholder="">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-offset-7 col-sm-3" style="text-align: right;margin-bottom: 10px;">
@@ -69,6 +75,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- Modal -->
+                <div class="modal" id="myModal" role="dialog" title="Delete Message">
+                    Do you want to delete this Company?
+                </div>
             </div>
         </div>
     </div>
@@ -76,13 +86,20 @@
 @endsection
 @section('scripts-top')
     <script type="text/javascript" src="{{ asset('js/download.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 @endsection
 @section('scripts')
     <script>
         $(document).ready(function(){
-            $('#users').DataTable({
+            var table = $('#users').DataTable({
                 'processing': true,
                 'serverSide': true,
+                'dom': '<l<t>ip>',
+                'stateSave': true,
+                'stateDuration': -1,
+                'stateSaveParams': function (settings, data) {
+                    data.search.search = '';
+                },
                 'ajax': {
                     url: '/companies',
                     type: 'get'
@@ -108,12 +125,16 @@
                     {
                         'data': 'CompanyId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="/admin/company/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
+                            return '<a id="delete" data-val="' + data + '"><img src="{{ asset('images/delete-icon.png') }}"></a>';
                         },
                         'orderable': false,
                         'searchable': false
                     },
                 ]
+            });
+
+            $('#search').keyup(function() {
+                table.search($(this).val()).draw();
             });
 
             $('#export_csv').on('click', function(e) {
@@ -128,6 +149,22 @@
                     },
                     error: function(error) {
                         console.log(error);
+                    }
+                });
+            });
+
+            $('body').on('click', '#delete', function() {
+                var id = $(this).attr('data-val');
+                $( "#myModal" ).dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                                window.location.href = "{{ url('/admin/company' ) }}/" + id + '/delete';
+                            },
+                        Cancel: function() {
+                            $( this ).dialog( 'close' );
+                        }
                     }
                 });
             });

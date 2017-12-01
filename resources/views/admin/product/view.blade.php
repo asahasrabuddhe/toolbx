@@ -25,8 +25,7 @@
                                 <label>CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select class="form-control valid" id="categoryId" name="category">
-                                </select>
+                                <input type="text" class="form-control" readonly value="{{ $product_info->CategoryName }}" />
                             </div>
                         </div>
                         <div class="row">
@@ -34,7 +33,7 @@
                                 <label>SUB CATEGORY</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <select class="form-control" id="subCategoryId" name="subcategory" required="">
+                                <input type="text" class="form-control" readonly value="{{ $product_info->SubCategoryName }}" />
                                 </select>
                             </div>
                         </div>
@@ -43,7 +42,7 @@
                                 <label>PRODUCT NAME</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input class="form-control" name="productname" placeholder="" type="text" value="{{ $product_info->ProductName or '' }}">
+                                <input class="form-control" readonly name="productname" placeholder="" type="text" value="{{ $product_info->ProductName or '' }}">
                             </div>
                         </div>
                         <div class="row">
@@ -51,7 +50,9 @@
                                 <label>DESCRIPTION</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <textarea class="form-control" cols="10" id="description" name="description" rows="5">{{ $product_info->ProductDetails or '' }}</textarea>
+                                <div style="border: 1px solid #ccd0d2; padding: 5px;">
+                                    {!! $product_info->ProductDetails or '' !!}
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -65,7 +66,31 @@
                                 <label>PRICE ($)</label>
                             </div>
                             <div class="form-group col-sm-7">
-                                <input class="form-control" name="price" placeholder="" type="text" value="{{ $product_info->Rate or '' }}">
+                                <input class="form-control" readonly name="price" placeholder="" type="text" value="{{ $product_info->Rate or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MANUFACTURER</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" readonly name="manufacturer" placeholder="" type="text" value="{{ $product_info->manufacturer or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MODEL</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" readonly name="model" placeholder="" type="text" value="{{ $product_info->model or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>SKU</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" readonly name="sku" placeholder="" type="text" value="{{ $product_info->sku or '' }}">
                             </div>
                         </div>
                     </div>
@@ -74,41 +99,4 @@
         </div>
     </div>
 </div>
-@endsection
-@section('scripts-top')
-    <script type="text/javascript" src="{{ asset('tinymce/tinymce.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
-@endsection
-@section('scripts')
-    <script>
-        $(document).ready(function(){
-            $('#categoryId').select2({
-                 initSelection: function (element, callback) {
-                    callback({id: '{{ $product_info->CategoryId }}', 'text': '{{ $product_info->CategoryName }}'});
-                },
-                placeholder: 'Select Category',
-                ajax: {
-                    url: '{{ url('/categories') }}',
-                }
-            }).on('change', function() {  $('#subCategoryId').trigger('change'); });
-            $('#subCategoryId').select2({
-                initSelection: function (element, callback) {
-                    callback({id: '{{ $product_info->SubCategoryId }}', 'text': '{{ $product_info->SubCategoryName }}'});
-                },
-                placeholder: 'Select Sub Category',
-                ajax:{
-                    url: function() {
-                        var categoryId = $('#categoryId').val();
-                        return '{{ url('/categories/') }}' + '/' +  categoryId + '/sub_categories';
-                    }
-                } 
-            });
-            tinymce.init({
-                selector: '#description',
-                menubar: false,
-                toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-
-            });
-        });
-    </script>
 @endsection

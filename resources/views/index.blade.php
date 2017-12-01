@@ -1,4 +1,4 @@
-@extends('includes.layouts.main', ['bodyClass' => 'bodybg'])
+@extends('includes.layouts.main', ['bodyClass' => 'bodybg', 'index' => 'true'])
 @section('title', 'Login - ToolBX')
 @section('content')
 <div class="container">

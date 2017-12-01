@@ -62,6 +62,7 @@
                                 <label>IMAGE</label>
                             </div>
                             <div class="col-sm-7">
+                                <input type="hidden" name="oldImage" value="{{ $product_info->ProductImage or '' }}">
                                 <img class="img-responsive productImage" src="{{  $product_info->ProductImage  or  ''  }}" style="width: 75%"> <input id="newImage" name="newImage" type="file">
                             </div>
                         </div>
@@ -71,6 +72,30 @@
                             </div>
                             <div class="form-group col-sm-7">
                                 <input class="form-control" name="price" placeholder="" type="text" value="{{ $product_info->Rate or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MANUFACTURER</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="manufacturer" placeholder="" type="text" value="{{ $product_info->manufacturer or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>MODEL</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="model" placeholder="" type="text" value="{{ $product_info->model or '' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 labelalign">
+                                <label>SKU</label>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <input class="form-control" name="sku" placeholder="" type="text" value="{{ $product_info->sku or '' }}">
                             </div>
                         </div>
                         <div class="row">

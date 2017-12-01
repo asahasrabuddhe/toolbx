@@ -15,6 +15,8 @@ Route::view('/', 'index');
 Route::view('/login', 'index');
 Route::post('/login', 'Auth\LoginController@login');
 Route::view('/forgot_password', 'forgot_password');
+
+Route::post('/forgot_password', 'Auth\LoginController@forgotPassword');
 Route::get('/admin/logout', 'Auth\LoginController@logout')->middleware('checksession');
 
 Route::view('/admin/user/list_users', 'admin.users.list_users')->middleware('checksession');
@@ -73,4 +75,8 @@ Route::get('/orders/{id}/details', 'OrdersController@getOrder')->middleware('che
 
 Route::get('/admin/companies/export', 'CompaniesController@getAllCompaniesCsv')->middleware('checksession');
 Route::get('/admin/orders/export', 'OrdersController@getAllOrdersCsv')->middleware('checksession');
-Route::get('/admin/order/{id}/export', 'OrdersController@exportOrderPdf')->middleware('checksession');
+Route::get('/admin/order/{id}/export', 'OrdersController@exportOrderPdfInvoice');
+Route::get('/admin/order/{id}/invoice', 'OrdersController@exportOrderPdfInvoice');
+
+Route::view('/admin/employee/invite', 'admin.company.invite')->middleware('checksession');
+Route::post('/admin/employee/invite', 'RunnerController@invite')->middleware('checksession');

@@ -3,6 +3,7 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
 @endsection
 @section('content')
 <div class="container">
@@ -26,7 +27,12 @@
                         <div class="col-sm-6">
                             <h4><label>PRODUCTS</label></h4>
                         </div>
-                        <div class="col-sm-6"></div>
+                        <div class="col-sm-6">
+                            <div class="input-group custom-search">
+                                <span class="input-group-addon">SEARCH <i class="glyphicon glyphicon-search"></i></span>
+                                <input id="search" type="text" class="form-control" name="search" placeholder="">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-9">
@@ -45,6 +51,12 @@
                             <a href="{{  url('/admin/product/add')  }}" style="text-decoration: none;margin-right: -6%;">+ ADD PRODUCT</a>
                         </div>
                     </div>
+                    <div class="row">
+                    	<div class="col-sm-3 col-sm-offset-9" style="text-align: right;margin-bottom: 10px;">
+                            <a id="publish_products" style="text-decoration: none;margin-right: -6%;">PUBLISH PRODUCTS</a>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
                     <table class="table" id="users">
                         <thead>
                             <tr>
@@ -58,29 +70,11 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
-                    </table><!-- Modal -->
-                    <div class="modal fade" id="myModal" role="dialog">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <p style="text-align: center;"><b>DELETE MESSAGE</b></p>
-                                </div>
-                                <div class="modal-body">
-                                    <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>
-                                </div>
-                                <div class="modal-footer" style="margin-bottom:-19px">
-                                    <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
-                                        <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
-                                            <button class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;" type="button">NO</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">
-                                        <a class="btn btn-info" href="" id="button123" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </table>
+                </div>
+                 <!-- Modal -->
+                <div class="modal" id="myModal" role="dialog" title="Delete Message">
+                    Do you want to delete this Product?
                 </div>
             </div>
         </div>
@@ -89,6 +83,7 @@
 @endsection
 @section('scripts-top')
     <script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 @endsection
 @section('scripts')
     <script>
@@ -100,6 +95,12 @@
                 'autoWidth': true,
                 'lengthChange': false,
                 'pageLength': 5,
+                'stateSave': true,
+                'stateDuration': -1,
+                'dom': '<l<t>ip>',
+                'stateSaveParams': function (settings, data) {
+                    data.search.search = '';
+                },
                 'ajax': {
                     url: '/products',
                     type: 'get',
@@ -129,7 +130,12 @@
                                 return '<img src="' + data + '" class="img-responsive">';
                         }
                     },
-                    {'data': 'Rate'},
+                    {
+                        'data': 'Rate',
+                        'render': function( data, type, row, meta ) {
+                            return '$'+data;
+                        }
+                    },
                     {
                         'data': 'ProductId',
                         'render': function( data, type, row, meta ) {
@@ -145,7 +151,7 @@
                     {
                         'data': 'ProductId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="/admin/product/' + data + '/delete"><img src="{{ asset('images/delete-icon.png') }}"></a>';
+                            return '<a id="delete" data-val="' + data + '"><img src="{{ asset('images/delete-icon.png') }}"></a>';
                         }
                     },
                 ]
@@ -171,6 +177,36 @@
                     }
                 } 
             }).on('change', function() { table.draw(); });
+            $('#search').keyup(function() {
+                table.search($(this).val()).draw();
+            });
+            $('#publish_products').on('click', function() {
+            	$.ajax({
+            		url: 'http://app.toolbx.com/api/user/productjson',
+            		type: 'get',
+            		success: function(data) {
+            			alert(data.message_text);
+            		},
+            		error: function(error) {
+            			alert('Unable to publish products. Please try again later');
+            		}
+            	});
+            });
+            $('body').on('click', '#delete', function() {
+                var id = $(this).attr('data-val');
+                $( "#myModal" ).dialog({
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                                window.location.href = "{{ url('/admin/product' ) }}/" + id + '/delete';
+                            },
+                        Cancel: function() {
+                            $( this ).dialog( 'close' );
+                        }
+                    }
+                });
+            });
         });
     </script>
 @endsection

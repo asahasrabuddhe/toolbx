@@ -1,5 +1,5 @@
 @extends('includes.layouts.main')
-@section('title', 'List Users - ToolBX Admin')
+@section('title', 'List Orders - ToolBX Admin')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}" type="text/css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" type="text/css">
@@ -19,24 +19,29 @@
                         <div class="col-sm-6">
                             <h4><label>ORDER HISTORY</label></h4>
                         </div>
-                        <div class="col-sm-6"></div>
+                        <div class="col-sm-6">
+                            <div class="input-group custom-search">
+                                <span class="input-group-addon">SEARCH <i class="glyphicon glyphicon-search"></i></span>
+                                <input id="search" type="text" class="form-control" name="search" placeholder="">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-6" style="text-align: right;background:#EEEEEE;padding: 5px;">
                             <div class="col-sm-6 npl">
                                 <div class="input-group from">
-                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y', strtotime('-7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                             <div class="col-sm-6 npr">
                                 <div class="input-group to">
-                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y', strtotime('+7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-2" style="text-align: right;margin-bottom: 10px;">
-                            <a id="export_csv" style="text-decoration: none;">+ EXPORT</a>
+                            <a id="export_csv" style="text-decoration: none;">EXPORT</a>
                         </div>
                     </div>
                     <table class="table" id="users">
@@ -44,7 +49,8 @@
                             <tr>
                                 <th class="clsleftheader">ORDER NO</th>
                                 <th class="clsheader">JOBSITE</th>
-                                <th class="clsheader">SUB TOTAL</th>
+                                <th class="clsheader">COMPANY NAME</th>
+                                <th class="clsheader">TOTAL</th>
                                 <th class="clsheader">DATE</th>
                                 <th class="clsheader">TIME</th>
                                 <th class="clsheader">RUNNER</th>
@@ -92,12 +98,17 @@
         $(document).ready(function(){
             var tblOrders = $('#users').DataTable({
                 'ordering': false,
-                'searching': false,
                 'processing': true,
                 'serverSide': true,
                 'autoWidth': true,
                 'lengthChange': false,
                 'pageLength': 8,
+                'dom': '<l<t>ip>',
+                'stateSave': true,
+                'stateDuration': -1,
+                'stateSaveParams': function (settings, data) {
+                    data.search.search = '';
+                },
                 'ajax': {
                     url: '/orders',
                     type: 'get',
@@ -114,6 +125,7 @@
                         }
                     },
                     {'data': 'JobSiteName'},
+                    {'data': 'CompanyName'},
                     {
                         'data': 'TotalAmount',
                         'render': function( data, type, row, meta ) {
@@ -134,7 +146,15 @@
                             return date.toLocaleTimeString('en-CA');
                         }
                     },
-                    {'data': 'RegistrationName'},
+                    {
+                        'data': 'RegistrationName',
+                        'render': function( data, type, row, meta ) {
+                            if( data !== null )
+                                return data;
+                            else
+                                return '-';
+                        }
+                    },
                     {
                         'data': 'status',
                         'render': function( data, type, row, meta ) {
@@ -147,7 +167,7 @@
                     {
                         'data':'OrderRating',
                         'render': function( data, type, row, meta ) {
-                            if( data == 0 )
+                            if( data == 0 || data == null )
                                 return 'Order Not Rated';
                             else
                                  return data;
@@ -160,6 +180,9 @@
                         }
                     },
                 ]
+            });
+            $('#search').keyup(function() {
+                tblOrders.search($(this).val()).draw();
             });
             $('#from_date').datepicker({
                 changeMonth: true,
@@ -188,8 +211,8 @@
                 var ids = [];
                 $.each($('tbody input:checked'), function(i, v) { ids.push( $(v).attr('id') ); });
 
-                var f = $('#from_date').datepicker('getDate').toISOString();
-                var t = $('#to_date').datepicker('getDate').toISOString();
+                var f = $('#from_date').val();
+                var t = $('#to_date').val();
 
                 var url = "{{ url('admin/orders/export') }}" + "?from_date=" + f + "&to_date=" + t;
                 if(ids.length)

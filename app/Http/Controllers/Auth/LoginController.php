@@ -24,6 +24,8 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
+    protected $toolbxAPI;
+
     /**
      * Where to redirect users after login.
      *
@@ -39,13 +41,12 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+        $this->toolbxAPI = new ToolbxAPI;
     }
 
     public function login(Request $request)
     {
-        $toolbxAPI = new ToolbxAPI;
-
-        $response = $toolbxAPI->post('admin/adminlogin', '', [
+        $response = $this->toolbxAPI->post('admin/adminlogin', '', [
             'Email' => $request->get('email'),
             'Password' => $request->get('password')
         ]);
@@ -60,6 +61,26 @@ class LoginController extends Controller
         {
             return response()->json($response);
         }
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $email = $request->get('email');
+
+        $response = $this->toolbxAPI->post('user/forgotpassword', '', [
+            'Email' => $email,
+        ]);
+
+        if( NULL == $response || $response->message_code == '1000' )
+        {
+            Session::flash('success_msg', 'Password reset successfully. New password is sent via email to you.');
+        }
+        else
+        {
+            Session::flash('error_msg', $response->message_text);
+        }
+
+        return Redirect::to('forgot_password');
     }
 
     public function logout(Request $request)
