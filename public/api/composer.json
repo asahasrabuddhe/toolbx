@@ -1,0 +1,9 @@
+{
+    "require": {
+        "slim/slim": "^3.1",
+        "slim/http-cache": "^0.3.0",
+        "jv2222/ezsql": "dev-master",
+        "phpmailer/phpmailer": "^6.0",
+        "mandrill/mandrill": "^1.0"
+    }
+}
