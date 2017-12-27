@@ -23,16 +23,16 @@
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
                     @if(Request::is('admin/user/*'))
-                        <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT USER</label></h4>
+                        <h4><img onclick="window.location.assign('{{ url()->previous() }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT USER</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/runners/' . Request::route('id') . '/update') }}" method="post">
                     @elseif(Request::is('admin/employee/*'))
                         <h4><img onclick="window.location.assign('{{ url()->previous() }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT EMPLOYEE</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/employee/' . Request::route('id') . '/update') }}" method="post">
                     @elseif(Request::is('admin/owner/*'))
-                        <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT OWNER</label></h4>
+                        <h4><img onclick="window.location.assign('{{ url()->previous() }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>EDIT OWNER</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/owner/' . Request::route('id') . '/update') }}" method="post">
                     @elseif(Request::is('admin/account'))
-                        <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>ADMIN ACCOUNT</label></h4>
+                        <h4><img onclick="window.location.assign('{{ url()->previous() }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>ADMIN ACCOUNT</label></h4>
                         <form class="top-form" id="top_form1" action="{{ url('/admin/update') }}" method="post">
                     @endif
                         {{ csrf_field() }}

@@ -27,32 +27,32 @@ class ProductController extends Controller
         $search = $request->get('search');
 
 
-        $total = DB::table('tbl_product')->where( 'display', 'Y')->where('Rate', '>', '0')->count();
+        $total = DB::table('tbl_product')->where( 'display', 'Y')->where('privateYN', 'N')->where('Rate', '>', '0')->count();
 
         if( $categoryId == 0 )
         {
             if( isset($search['value']) && !empty($search['value'])) {
                 $total = DB::table('tbl_product')
-                        ->where( 'display', 'Y')
+                        ->where( 'display', 'Y')->where('privateYN', 'N')
                         ->where('Rate', '>', '0')->where('ProductName', 'like', '%' . $search['value'] . '%')->count();
                 $filtered = $total;
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
                 $filtered = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')                     
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->orderBy('ProductId', 'DESC')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->orderBy('ProductId', 'DESC')->get();
             }
@@ -61,23 +61,23 @@ class ProductController extends Controller
         {
             if( isset($search['value']) && !empty($search['value'])) {
                 $total = DB::table('tbl_product')
-                        ->where( 'display', 'Y')
+                        ->where( 'display', 'Y')->where('privateYN', 'N')
                         ->where('Rate', '>', '0')->where('ProductName', 'like', '%' . $search['value'] . '%')->where('CategoryId', $categoryId)->count();
             	$filtered = $total;
             	$products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->where('CategoryId', $categoryId)
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
-                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->where('Rate', '>', '0')->count();
+                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('privateYN', 'N')->where('CategoryId', $categoryId)->where('Rate', '>', '0')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->where('CategoryId', $categoryId)
                             ->orderBy('ProductId', 'DESC')->get();
@@ -87,7 +87,7 @@ class ProductController extends Controller
         {
             if( isset($search['value']) && !empty($search['value'])) {
                 $total = DB::table('tbl_product')
-                        ->where( 'display', 'Y')
+                        ->where( 'display', 'Y')->where('privateYN', 'N')
                         ->where('Rate', '>', '0')->where('ProductName', 'like', '%' . $search['value'] . '%')
                         ->where('CategoryId', $categoryId)
                         ->where('SubCategoryId', $subCategoryId)->count();
@@ -95,18 +95,18 @@ class ProductController extends Controller
             	$products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->where('CategoryId', $categoryId)
                             ->where('SubCategoryId', $subCategoryId)
                             ->where('ProductName', 'like', '%' . $search['value'] . '%')
                             ->orderBy('ProductId', 'DESC')->get();
             } else {
-                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('CategoryId', $categoryId)->where('SubCategoryId', $subCategoryId)->where('Rate', '>', '0')->count();
+                $filtered = DB::table('tbl_product')->where( 'display', 'Y')->where('privateYN', 'N')->where('CategoryId', $categoryId)->where('SubCategoryId', $subCategoryId)->where('Rate', '>', '0')->count();
                 $products = DB::table('tbl_product')
                             ->select('ProductId', 'ProductName', 'ProductDetails', 'ProductImage', 'Rate')
                             ->offset($start)->limit($length)                            
-                            ->where( 'display','Y')
+                            ->where( 'display','Y')->where('privateYN', 'N')
                             ->where('Rate', '>', '0')
                             ->where('CategoryId', $categoryId)
                             ->where('SubCategoryId', $subCategoryId)

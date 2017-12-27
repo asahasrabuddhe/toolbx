@@ -89,11 +89,11 @@ class CompaniesController extends Controller
         ]);
 
         if( $response === NULL ) {
-            Session::flash('success_msg','Owner Invitation Sent successfully');
-            return $msg = 'Owner Invitation Sent successfully';
-        } else {
             Session::flash('success_msg','Email or Company already exist.');
             return $response->message_text;
+        } else {
+            Session::flash('success_msg','Owner Invitation Sent successfully');
+            return $msg = 'Owner Invitation Sent successfully';
         }
     }
 

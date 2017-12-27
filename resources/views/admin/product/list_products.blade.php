@@ -53,7 +53,7 @@
                     </div>
                     <div class="row">
                     	<div class="col-sm-3 col-sm-offset-9" style="text-align: right;margin-bottom: 10px;">
-                            <a id="publish_products" style="text-decoration: none;margin-right: -6%;">PUBLISH PRODUCTS</a>
+                            <a id="publish_products" style="text-decoration: none; margin-right: -6%; cursor: pointer;">PUBLISH PRODUCTS</a>
                         </div>
                     </div>
                     <div class="clearfix"></div>
@@ -182,7 +182,7 @@
             });
             $('#publish_products').on('click', function() {
             	$.ajax({
-            		url: 'http://app.toolbx.com/api/user/productjson',
+            		url: 'http://staging.toolbx.com/api/user/productjson',
             		type: 'get',
             		success: function(data) {
             			alert(data.message_text);

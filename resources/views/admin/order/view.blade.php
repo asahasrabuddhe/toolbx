@@ -43,16 +43,16 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>SUB TOTAL</label> <span>${{ $order_details->TotalAmount - $order_details->TaxAmount - $order_details->DeliveryCharges }}</span>
+                            <label>SUB TOTAL</label> <span>${{ number_format ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1), 2) }}</span>
                         </div>
                         <div class="col-sm-3">
-                            <label>HST</label> <span>${{ $order_details->TaxAmount }}</span>
+                            <label>HST</label> <span>${{ number_format (( ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1)) * 0.13), 2) }}</span>
                         </div>
                         <div class="col-sm-3">
                             <label>DELIVERY FEE</label> <span>${{ $order_details->DeliveryCharges }}</span>
                         </div>
                         <div class="col-sm-3">
-                            <label>TOTAL</label> <span>${{ $order_details->TotalAmount  }}</span>
+                            <label>TOTAL</label> <span>${{ number_format($order_details->TotalAmount + ($order_details->TotalAmount * 0.1) + number_format (( ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1)) * 0.13), 2) +  $order_details->DeliveryCharges, 2) }}</span>
                         </div>
                     </div>
                     <table class="table" id="users">

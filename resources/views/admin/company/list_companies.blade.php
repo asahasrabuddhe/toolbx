@@ -51,29 +51,7 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
-                    </table><!-- Modal -->
-                    <div class="modal fade" id="myModal" role="dialog">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <p style="text-align: center;"><b>DELETE MESSAGE</b></p>
-                                </div>
-                                <div class="modal-body">
-                                    <p style="font-family:verdana;text-align: center;">DO YOU WANT TO DELETE THIS RUNNER?</p>
-                                </div>
-                                <div class="modal-footer" style="margin-bottom:-19px">
-                                    <div class="col-sm-6 col-xs-6" style="border-right:solid 1px #EBEBEB;height:100%;margin-top:-19px">
-                                        <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:10px">
-                                            <button class="btn btn-default btn-block" data-dismiss="modal" style="width: 100%;background-color: transparent; border: medium; border-width: 0px 0px 0px 1px;" type="button">NO</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 col-xs-6" style="height:42px;margin-top:-10px">
-                                        <a class="btn btn-info" href="" id="button123" role="button" style="width: 100%;background-color: transparent; border: medium; color:#333;">YES</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </table>
                 </div>
                 <!-- Modal -->
                 <div class="modal" id="myModal" role="dialog" title="Delete Message">

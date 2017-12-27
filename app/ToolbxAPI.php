@@ -14,7 +14,7 @@ class ToolbxAPI
     
 	function __construct() {
 		$this->client = new Client([
-			'base_uri' => 'http://app.toolbx.com/api/'
+			'base_uri' => 'http://staging.toolbx.com/api/'
 		]);
 		$this->strUserAgent = 'Toolbx/2.0';
     }

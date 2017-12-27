@@ -38,7 +38,7 @@
                     <div class="clearfix" style="padding-bottom: 15px"></div>
                     <div class="row">
                         <div class="col-sm-8">
-                            <ul class="nav nav-tabs">
+                            <ul class="nav nav-tabs" id="myTab">
                                 <li class="active"><a data-toggle="tab" href="#orders">ORDERS</a></li>
                                 <li><a data-toggle="tab" href="#employees">EMPLOYEES</a></li>
                                 <li><a data-toggle="tab" href="#owner">OWNER</a></li>
@@ -405,6 +405,16 @@
                     }
                 });
             });
+
+            // store the currently selected tab in the hash value
+            $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+              var id = $(e.target).attr("href").substr(1);
+              window.location.hash = id;
+            });
+
+            // on load of the page: switch to the currently selected tab
+            var hash = window.location.hash;
+            $('#myTab a[href="' + hash + '"]').tab('show');
         });
     </script>
 @endsection

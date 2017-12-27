@@ -1,11 +1,10 @@
 /node_modules
-/public
 /public/js/
 /public/css/
-/public/api
 /public/*.*
 /public/hot
 /public/storage
+/public/api/uploads
 /storage/*.key
 /vendor
 /.idea

@@ -183,9 +183,13 @@
     			       { 	
     				     	if(data)
     				     	{	
-    				     	    $("#getCode").html(data);
+    				     		@if(Request::is('admin/owner/invite'))
+							   		$("#getCode").html('Owner Invited successfully.');
+							   	@elseif(Request::is('admin/employee/invite'))
+							   		$("#getCode").html('Employee Invited successfully.');
+							   	@endif
 	    						$("#getCodeModal").modal('show');
-	    						var data = "Invitation sent successfully to owner";
+	    						var data = "Invitation sent successfully";
     				     	    $("#lblMessage").text(data);
     				     	    $( "#dialog" ).dialog({
                                   	modal: true,
@@ -199,7 +203,7 @@
     				     	}
     				     	else
     				     	{
-    				     		var data = "Invitation sent successfully to owner";
+    				     		var data = "Invitation sent successfully";
 					     		$("#getCode").html(data);
 	    						$("#getCodeModal").modal('show');
     						    $("#error").fadeIn(1000, function()

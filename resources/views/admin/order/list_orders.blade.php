@@ -129,7 +129,7 @@
                     {
                         'data': 'TotalAmount',
                         'render': function( data, type, row, meta ) {
-                            return '$' + data;
+                            return '$' + parseFloat(parseFloat(data) + (parseFloat(data) * 0.1) + ( (parseFloat(data) + (parseFloat(data) * 0.1)) * 0.13 ) + parseFloat(row.DeliveryCharges)).toFixed(2);
                         }
                     },
                     {

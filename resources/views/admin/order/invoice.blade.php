@@ -155,7 +155,7 @@
                                                     <td>{{ $detail->sku }}</td>
                                                     <td>{{ $detail->Quantity }}</td>
                                                     <td>${{ number_format($detail->Rate + $detail->Rate * 0.1, 2) }}</td>
-                                                    <td>${{ number_format($detail->Amount + $detail->Amount * 0.1, 2) }}</td>
+                                                    <td>${{ number_format(($detail->Rate + $detail->Rate * 0.1) * $detail->Quantity, 2) }}</td>
                                                 </tr>
                                             @empty
                                             @endforelse
@@ -166,14 +166,14 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td colspan="2"><b>Subtotal</b></td>
-                                                <td>${{ number_format($order->TotalAmount - $order->TaxAmount - $order->DeliveryCharges, 2) }}</td>
+                                                <td>${{ number_format($order->SubTotal + ($order->SubTotal * 0.1), 2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td colspan="2"><b>HST (13%)</b></td>
-                                                <td>${{ $order->TaxAmount }}</td>
+                                                <td>${{ number_format( ( ( $order->SubTotal + ($order->SubTotal * 0.1) ) * 0.13), 2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -187,7 +187,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td colspan="2"><b>Total</b></td>
-                                                <td>${{ $order->TotalAmount  }}</td>
+                                                <td>${{ number_format($order->SubTotal + ($order->SubTotal * 0.1) + number_format( ( ( $order->SubTotal + ($order->SubTotal * 0.1) ) * 0.13), 2) + $order->DeliveryCharges, 2)  }}</td>
                                             </tr>
                                         </tfoot>
                                     </table>
