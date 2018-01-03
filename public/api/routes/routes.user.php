@@ -196,3 +196,5 @@ $app->post('/product/jsonupdated', 'tbx_product_jsonupdated');
 $app->get('/user/getthresold', 'tbx_product_priceThresold');
 
 $app->post('/runner/{id:[0-9]+}/insertitem', 'tbx_runner_insert_item');
+
+$app->get('/app/status', 'tbx_app_status');

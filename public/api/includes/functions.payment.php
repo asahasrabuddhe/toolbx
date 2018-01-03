@@ -117,12 +117,13 @@ use \Psr\Http\Message\ResponseInterface as Response;
                         //HST 13%
                         $totalamount = floatval($totalamount) + (floatval($totalamount) * 13)/100;
 
-                        if (intval($totalamount) <= 100 && intval($totalamount) > 0)
-                            $DeliveryCharges = 25.00;
-                        else if (intval($totalamount) > 100) 
-                            $DeliveryCharges = 50.00;
-                        else 
-                            $DeliveryCharges = 0.00;
+                        $DeliveryCharges = 35.00;
+                        // if (intval($totalamount) <= 100 && intval($totalamount) > 0)
+                        //     $DeliveryCharges = 25.00;
+                        // else if (intval($totalamount) > 100) 
+                        //     $DeliveryCharges = 50.00;
+                        // else 
+                        //     $DeliveryCharges = 0.00;
 
                         $totalamount = (floatval($totalamount) + intval($DeliveryCharges));
                         

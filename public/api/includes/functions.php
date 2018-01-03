@@ -1,5 +1,7 @@
 <?php
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -704,5 +706,30 @@ if (!function_exists('str_putcsv')) {
             fclose($fh);
 
             return $csv;
+    }
+}
+
+
+function tbx_app_status(Request $request, Response $response) 
+{
+    $parameters = $request->getParams();
+    $objTimeZone = new DateTimeZone($parameters['timezone']);
+
+    $objStartTime = new DateTime("now", $objTimeZone);
+    $objStartTime->setTime(07,00);
+
+    $objEndTime = new DateTime("now", $objTimeZone);
+    $objEndTime->setTime(17,00);
+
+    $objNow = new DateTime("now", $objTimeZone);
+
+    if( $objNow > $objStartTime && $objNow < $objEndTime) {
+        return $response->withJson([
+            'status' => true,
+        ], 200);
+    } else {
+        return $response->withJson([
+            'status' => false,
+        ], 200);
     }
 }

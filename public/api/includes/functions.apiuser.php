@@ -751,47 +751,66 @@ function tbx_user_account_credit_details_update( Request $request, Response $res
     	$db = database();
     	$id = $request->getAttribute('id');	
     
-    	$base_query = $db->get_row( ' SELECT RegistrationId, RegsitrationRoleId, CompanyId FROM `tbl_registration`  WHERE RegistrationId = "'.$id.'" AND IsDeleted= \'N\' ' );
+    	$base_query = $db->get_row( 'SELECT RegistrationId, RegsitrationRoleId, CompanyId FROM `tbl_registration`  WHERE RegistrationId = "'.$id.'" AND IsDeleted= \'N\' ' );
     	if($base_query->RegsitrationRoleId == 2)
     	{
-    		$base_query = 'select least(ifnull(CardNumber,0),ifnull(CVC,0),ifnull(CardExpiryDate,0))as Resultant from  tbl_registration where RegistrationId = "'.$id.'"  ';
-    		$result = $db->get_row( $base_query );
-    		if(!$result )
-    		{
-    			$res = array( 'message_code' => 999, 'message_text' => 'Data Not Found.');
-    		}
-	        if($result->Resultant > 0)
-    		{
-    		    $result1['available'] = "Y";
-    		    $res = array( 'message_code' => 1000, 'data_text' => $result1 );
-    		}
+    		$CardStripeTokenId = $db->get_var('select CardStripeTokenId from  tbl_registration where RegistrationId =' . $id);
+
+    		if (isset($CardStripeTokenId) && !empty($CardStripeTokenId) && $CardStripeTokenId != null)
+    			$result1['available'] = "Y";
     		else
-    		{
-    		    $result2['available'] = "N";
-    			$res = array( 'message_code' => 1000, 'data_text' => $result2 );
-    		}
+    			$result1['available'] = "N";
+    		
+    		$res = array( 'message_code' => 1000, 'data_text' => $result1 );
+    		// $base_query = 'select least(ifnull(CardNumber,0),ifnull(CVC,0),ifnull(CardExpiryDate,0)) as Resultant from  tbl_registration where RegistrationId = "'.$id.'"  ';
+    		// $result = $db->get_row( $base_query );
+    		// if(!$result )
+    		// {
+    		// 	$res = array( 'message_code' => 999, 'message_text' => 'Data Not Found.');
+    		// }
+	     //    if($result->Resultant > 0)
+    		// {
+    		//     $result1['available'] = "Y";
+    		//     $res = array( 'message_code' => 1000, 'data_text' => $result1 );
+    		// }
+    		// else
+    		// {
+    		//     $result2['available'] = "N";
+    		// 	$res = array( 'message_code' => 1000, 'data_text' => $result2 );
+    		// }
     	}
     	else
     	{
     	   
     		$base_queryres = 'SELECT tr.RegistrationId FROM tbl_registration AS tr RIGHT JOIN tbl_companies as tc ON tc.CompanyId=tr.CompanyId WHERE tr.CompanyId = "'.$base_query->CompanyId.'" ';
     		$baseresult = $db->get_row($base_queryres);
-    		$base_query2 = 'select least(ifnull(CardNumber,0),ifnull(CVC,0),ifnull(CardExpiryDate,0))as Resultant from  tbl_registration where RegistrationId = "'.$baseresult->RegistrationId.'"  ';
-    		$result = $db->get_row( $base_query2 );
-    		if(!$result )
-    		{
-    			$res = array( 'message_code' => 999, 'message_text' => 'Data Not Found.');
-    		}
-    		 if($result->Resultant > 0)
-    		{
-    		    $result1['available'] = "Y";
-    		    $res = array( 'message_code' => 1000, 'data_text' => $result1 );
-    		}
+    		
+
+    		$CardStripeTokenId = $db->get_var('select CardStripeTokenId from  tbl_registration where RegistrationId =' . $baseresult->RegistrationId);
+
+    		if (isset($CardStripeTokenId) && !empty($CardStripeTokenId) && $CardStripeTokenId != null)
+    			$result1['available'] = "Y";
     		else
-    		{
-    		    $result2['available'] = "N";
-    			$res = array( 'message_code' => 1000, 'data_text' => $result2 );
-    		}
+    			$result1['available'] = "N";
+    		
+    		$res = array( 'message_code' => 1000, 'data_text' => $result1 );
+
+    		// $base_query2 = 'select least(ifnull(CardNumber,0),ifnull(CVC,0),ifnull(CardExpiryDate,0))as Resultant from  tbl_registration where RegistrationId = "'.$baseresult->RegistrationId.'"  ';
+    		// $result = $db->get_row( $base_query2 );
+    		// if(!$result )
+    		// {
+    		// 	$res = array( 'message_code' => 999, 'message_text' => 'Data Not Found.');
+    		// }
+    		//  if($result->Resultant > 0)
+    		// {
+    		//     $result1['available'] = "Y";
+    		//     $res = array( 'message_code' => 1000, 'data_text' => $result1 );
+    		// }
+    		// else
+    		// {
+    		//     $result2['available'] = "N";
+    		// 	$res = array( 'message_code' => 1000, 'data_text' => $result2 );
+    		// }
     	}
     	return $response->withJson( $res, 200 );
     }
