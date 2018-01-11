@@ -111,13 +111,15 @@ use \Psr\Http\Message\ResponseInterface as Response;
                         $totalamount = $db->get_var($sSQL);
 
                         $RateThresold = $db->get_var("SELECT ParameterValue from tbl_SystemParameters where ParameterName='PRICETHRESOLD'");
+                        $DeliveryCharges = 35.00;
 
-                        $totalamount = floatval($totalamount) + (floatval($totalamount) * floatval($RateThresold))/100;
+                        $totalamount = round((floatval($totalamount) + ((floatval($totalamount) * floatval($RateThresold))/100)) ,2);
+
 
                         //HST 13%
-                        $totalamount = floatval($totalamount) + (floatval($totalamount) * 13)/100;
+                        $tax = round((($totalamount + $DeliveryCharges) * 0.13),2);
+                        // $totalamount = round(((floatval($totalamount)) + (((floatval($totalamount)) * 13)/100)) ,2);
 
-                        $DeliveryCharges = 35.00;
                         // if (intval($totalamount) <= 100 && intval($totalamount) > 0)
                         //     $DeliveryCharges = 25.00;
                         // else if (intval($totalamount) > 100) 
@@ -125,9 +127,9 @@ use \Psr\Http\Message\ResponseInterface as Response;
                         // else 
                         //     $DeliveryCharges = 0.00;
 
-                        $totalamount = (floatval($totalamount) + intval($DeliveryCharges));
+                        $totalamount = (floatval($totalamount) + intval($DeliveryCharges)) + $tax;
                         
-                        $amount_cents = str_replace(".","",$totalamount); 
+                        $amount_cents = floatval($totalamount) * 100; 
                         $description = "Order No#" . $orderid;
 
                          // $res = array( 'message_code' => 999, 'message_text' => $sSQL . "-" . $amount_cents);
@@ -152,6 +154,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
                             "capture" => true,
                             "description" => $description)     
                             );
+
+                            $stripeToken = $charge->id;
 
                             // Payment has succeeded, no exceptions were thrown or otherwise caught    
                             $result = "success";

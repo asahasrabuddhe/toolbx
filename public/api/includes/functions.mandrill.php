@@ -37,7 +37,14 @@ function tbx_ajitem_order_cancel_mail($name, $email, $subject, $data)
 	$result = tbx_ajitem_mandrill_send($template_name, $name, $email, $subject, $data);
 }
 
-function tbx_ajitem_mandrill_send($template_name, $name, $email, $subject, $data)
+function tbx_ajitem_order_invoice_mail($name, $email, $subject, $data, $attachments)
+{
+	$template_name = 'Invoice';
+
+	$result = tbx_ajitem_mandrill_send($template_name, $name, $email, $subject, $data, $attachments);
+}
+
+function tbx_ajitem_mandrill_send($template_name, $name, $email, $subject, $data, $attachments = [])
 {
 	try {
 		$mandrill = new Mandrill('0Wp8x9iolGgoQkTvKPgbfw');
@@ -62,7 +69,8 @@ function tbx_ajitem_mandrill_send($template_name, $name, $email, $subject, $data
 	        'return_path_domain' => null,
 	        'merge' => true,
 	        'merge_language' => 'mailchimp',
-	        'global_merge_vars' => $data
+	        'global_merge_vars' => $data,
+	        'attachments' => $attachments
 	    );
 
 	    $result = $mandrill->messages->sendTemplate($template_name, $template_content, $message);

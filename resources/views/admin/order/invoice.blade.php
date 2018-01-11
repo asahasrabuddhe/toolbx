@@ -68,6 +68,12 @@
 
         table#content tfoot td:nth-child(4) {
             background-color: rgb(217, 217, 217) !important;
+            text-align: left !important;
+            padding-left: 10px !important;
+        }
+        table#content tfoot td:nth-child(4) b {
+            text-align: left !important;
+            padding-left: 10px !important;
         }
         .foot {
             border-top: 6px solid #f8b700 !important;
@@ -111,7 +117,7 @@
                                             </tr>
                                             <tr>
                                                 <td><b>Order Number</b></td>
-                                                <td>{{ $order->OrderId }}</td>
+                                                <td>TB-{{ (181110 + $order->OrderId) }}</td>
                                             </tr>
                                             <tr>
                                                 <td><b>Jobsite</b></td>
@@ -165,29 +171,29 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td colspan="2"><b>Subtotal</b></td>
+                                                <td class="left-align" colspan="2"><b>Subtotal</b></td>
                                                 <td>${{ number_format($order->SubTotal + ($order->SubTotal * 0.1), 2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td colspan="2"><b>HST (13%)</b></td>
-                                                <td>${{ number_format( ( ( $order->SubTotal + ($order->SubTotal * 0.1) ) * 0.13), 2) }}</td>
+                                                <td class="left-align" colspan="2"><b>HST (13%)</b></td>
+                                                <td>${{ number_format(  $order->TaxAmount , 2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td colspan="2"><b>Shipping</b></td>
+                                                <td class="left-align" colspan="2"><b>Shipping</b></td>
                                                 <td>${{ $order->DeliveryCharges }}</td>
                                             </tr>
                                             <tr>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td colspan="2"><b>Total</b></td>
-                                                <td>${{ number_format($order->SubTotal + ($order->SubTotal * 0.1) + number_format( ( ( $order->SubTotal + ($order->SubTotal * 0.1) ) * 0.13), 2) + $order->DeliveryCharges, 2)  }}</td>
+                                                <td class="left-align" colspan="2"><b>Total</b></td>
+                                                <td>${{ number_format( ( $order->SubTotal + ($order->SubTotal * 0.1) + $order->TaxAmount + $order->DeliveryCharges ), 2)  }}</td>
                                             </tr>
                                         </tfoot>
                                     </table>

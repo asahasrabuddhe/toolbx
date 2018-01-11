@@ -121,7 +121,7 @@
                     {
                         'data': 'OrderId',
                         'render': function( data, type, row, meta ) {
-                            return '<a href="' + '{{ url('admin/order') }}' + '/' + data + '/view">' + data + '</a>';
+                            return '<a href="' + '{{ url('admin/order') }}' + '/' + data + '/view">' + 'TB-' + (181110 + parseInt(data)) + '</a>';
                         }
                     },
                     {'data': 'JobSiteName'},
@@ -129,7 +129,7 @@
                     {
                         'data': 'TotalAmount',
                         'render': function( data, type, row, meta ) {
-                            return '$' + parseFloat(parseFloat(data) + (parseFloat(data) * 0.1) + ( (parseFloat(data) + (parseFloat(data) * 0.1)) * 0.13 ) + parseFloat(row.DeliveryCharges)).toFixed(2);
+                            return '$' + (parseFloat( parseFloat(data) + (parseFloat(data) * 0.1) ) + parseFloat(row.TaxAmount) + parseFloat(row.DeliveryCharges)).toFixed(2);
                         }
                     },
                     {

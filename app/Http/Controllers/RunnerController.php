@@ -199,26 +199,29 @@ class RunnerController extends Controller
 
     public function changeAdminPassword(Request $request)
     {
-        if( $request->get('new_password') !== $request->get('confirm_password'))
+        if( $request->get('new_password') == $request->get('confirm_password'))
         {
             $response = $this->toolbxAPI->post('admin/changepassword', '', [
                 'id' => Session::get('user_data')->admin_id,
                 'old_password' => $request->get('current_password'),
                 'new_password' => $request->get('new_password')
             ]);
+
+
+                if( $response != NULL && $response->message_code == 1000 ) {
+                    Session::flash('success_msg','Admin Password changed successfully');
+                    // return $msg = 'Admin Password changed successfully';
+                    return Redirect::to(url('/admin/change_password'));
+                } else {
+                    Session::flash('success_msg','Current password incorrect.');
+                    // return $response->message_text;
+                    return Redirect::to(url('/admin/change_password'));
+                }
         }
         else
         {
-            Session::flash('New password and Confirm Password are not matching');
+            Session::flash('success_msg', 'New password and Confirm Password are not matching');
             return Redirect::to(url('/admin/change_password'));
-        }
-
-        if( $response === NULL ) {
-            Session::flash('success_msg','Admin Password changed successfully');
-            return $msg = 'Runner Invitation Sent successfully';
-        } else {
-            Session::flash('success_msg','Current password incorrect.');
-            return $response->message_text;
         }
     }
 }

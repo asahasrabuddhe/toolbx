@@ -68,7 +68,7 @@ function tbx_runner_owner_order_details($order_id, $source)
                     LEFT JOIN `tbl_registration` AS tr ON tbo.RegistrationId = tr.RegistrationId
                     WHERE tbo.OrderId="' . $order_id . '" AND tod.display=\'Y\' ';  
         if ($source == 1)
-                $base_query = $base_query . " and Available = 1";
+                $base_query = $base_query . " and (Available = 1 or Available = 0)";
                     
     $result = $db->get_results( $base_query );
     if( isset( $result ) && !empty( $result ) )
@@ -149,14 +149,25 @@ function tbx_runner_update_item( Request $request, Response $response )
        // $RateThresold = $db->get_var("SELECT ParameterValue from tbl_SystemParameters where ParameterName='PRICETHRESOLD'");
         if ($cnt==1)
         {
-             $sSQL = "UPDATE tbl_order_details SET OriginalQuantity = Quantity WHERE OrderId=" . $order_id . " AND ProductId=" . $productId; 
+            $sSQL = "UPDATE tbl_order_details SET OriginalQuantity = Quantity WHERE OrderId=" . $order_id . " AND ProductId=" . $productId; 
         
             $db->query( $sSQL );
             $sSQL = "UPDATE tbl_order_details SET Available=" . $productAvailable . ", Quantity=" . $productQty . ", Amount = ( Rate * ". $productQty . ") WHERE OrderId=" . $order_id . " AND ProductId=" . $productId; 
-            //echo $sSQL;exit();
+            // echo $sSQL;exit();
             
-            if ($db->query( $sSQL ))
-                $res = array( "message_code" => 1000, "data_text" => "Product updated successfully." );
+            if (false !== $db->query( $sSQL ))
+                $order_details = $db->get_results('SELECT * FROM tbl_order_details WHERE Available <> -1 AND  OrderId = ' . $order_id);
+                $subtotal = 0;
+                foreach($order_details as $detail) {
+                    $subtotal += ($detail->Amount + ($detail->Amount * 0.1));
+                }
+                $order = $db->get_row('SELECT DeliveryCharges FROM tbl_order WHERE OrderId = ' . $order_id);
+                $taxes = ($subtotal + $order->DeliveryCharges) * 0.13;
+
+                $updateOrder = $db->query('UPDATE tbl_order SET TaxAmount = ' . $taxes . ' WHERE OrderId = ' . $order_id);
+                if(false !== $updateOrder) {
+                    $res = array( "message_code" => 1000, "data_text" => "Product updated successfully." );
+                }
             else
                 $res = array( "message_code" => 999, "data_text" => "Unable to update product." );
         }
@@ -171,8 +182,19 @@ function tbx_runner_update_item( Request $request, Response $response )
                 //$rate = number_format( $rate, 2, '.', '' );
                 $sSQL = 'INSERT INTO `tbl_order_details`(DeletedBy,DeletedOn,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn,display,ProductId,OrderId,Quantity,Rate,Amount,Delivered,Available,OriginalQuantity) VALUES(NULL,NULL,NULL,now(),NULL,now(),"Y",'.$productId.','.$order_id.','.$productQty.', '.$rate.','.$rate * $productQty.', "N","' . $productAvailable . '",0 ) ';
                 
-                if ($db->query( $sSQL ))
-                    $res = array( "message_code" => 1000, "data_text" => "Product added successfully." );
+                if (false !== $db->query( $sSQL ))
+                    $order_details = $db->get_results('SELECT * FROM tbl_order_details WHERE Available <> -1 AND OrderId = ' . $order_id);
+                    $subtotal = 0;
+                    foreach($order_details as $detail) {
+                        $subtotal += ($detail->Amount + ($detail->Amount * 0.1));
+                    }
+                    $order = $db->get_row('SELECT DeliveryCharges FROM tbl_order WHERE OrderId = ' . $order_id);
+                    $taxes = ($subtotal + $order->DeliveryCharges) * 0.13;
+
+                    $updateOrder = $db->query('UPDATE tbl_order SET TaxAmount = ' . $taxes . ' WHERE OrderId = ' . $order_id);
+                    if(false !== $updateOrder) {
+                        $res = array( "message_code" => 1000, "data_text" => "Product added successfully." );
+                    }
                 else
                     $res = array( "message_code" => 999, "data_text" => "Unable to add product." );
             }
@@ -223,10 +245,23 @@ function tbx_runner_insert_item( Request $request, Response $response )
         {  
           $sSQL = 'INSERT INTO `tbl_order_details`(DeletedBy, DeletedOn, CreatedBy, CreatedOn, LastModifiedBy, LastModifiedOn, display, ProductId, OrderId, Quantity, Rate, Amount, Delivered, Available, OriginalQuantity) VALUES(NULL,NULL,NULL, now(),NULL, now(), "Y", "' . $productId.  '",' . $order_id . ',' . $productQty . ', ' . $productRate . ',' . $productRate * $productQty . ', "N",' . $productAvailable . ',' . $productQty . ' ) ';
         
-            if ($db->query( $sSQL ))
-                $res = array( "message_code" => 1000, "data_text" => "Product added successfully." );
-            else
+            if (false !== $db->query( $sSQL )) {
+                $order_details = $db->get_results('SELECT * FROM tbl_order_details WHERE Available <> -1 AND  OrderId = ' . $order_id);
+                $subtotal = 0;
+                foreach($order_details as $detail) {
+                    $subtotal += ($detail->Amount + ($detail->Amount * 0.1));
+                }
+                $order = $db->get_row('SELECT DeliveryCharges FROM tbl_order WHERE OrderId = ' . $order_id);
+                $taxes = ($subtotal + $order->DeliveryCharges) * 0.13;
+
+                $updateOrder = $db->query('UPDATE tbl_order SET TaxAmount = ' . $taxes . ' WHERE OrderId = ' . $order_id);
+                if(false !== $updateOrder) {
+                    $res = array( "message_code" => 1000, "data_text" => "Product added successfully.", 'debug' => ['st' => $subtotal, 't' => $taxes] );
+                }
+            }
+            else {
                 $res = array( "message_code" => 999, "data_text" => "Unable to add product." );   
+            }
         }
     }
     return $response->withJson( $res, 200 );
@@ -787,36 +822,29 @@ function tbx_runner_insert_item( Request $request, Response $response )
         error_reporting(0);
         ini_set('display_errors', '0');
         $response = file_get_contents('http://staging.toolbx.com/admin/order/' . $orderid . '/invoice');
-        $Subject = 'Order #' . $orderid . ' Invoice';
-        $Message = 'Thank you for your order. Please find the invoice attached.';
-        $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
-        try {
-            //Server settings
-            $mail->SMTPDebug = 0;                                 // Enable verbose debug output
-            $mail->isSMTP();                                      // Set mailer to use SMTP
-            $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-            $mail->SMTPAuth = true;                               // Enable SMTP authentication
-            $mail->Username = 'info@toolbx.com';                 // SMTP username
-            $mail->Password = 'Toolbx123';                           // SMTP password
-            $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-            $mail->Port = 587;                                    // TCP port to connect to
-            //Recipients
-            $mail->setFrom('info@mytoolbx.com', 'Toolbx Support');
-            $mail->addAddress($email);     // Add a recipient
-            //Content
-            $mail->isHTML(true);                                  // Set email format to HTML
-            $mail->Subject = $Subject;
-            $mail->Body    = $Message;
-            // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-            $mail->AddAttachment(dirname(dirname(__DIR__)) . '/invoices/' . $orderid . '_invoice.pdf');
-            $mail->send();
-            return 'Message has been sent';
-            // return true;
-        } catch (Exception $e) {
-            echo 'Message could not be sent.';
-            echo 'Mailer Error: ' . $mail->ErrorInfo;
-            return false;
-        }
+        $subject = 'Order #' . $orderid . ' Invoice';
+        $db = database();
+        $base_query = $db->get_row('SELECT tbl_registration.RegistrationName FROM tbl_registration JOIN tbl_order ON tbl_order.RegistrationId = tbl_registration.RegistrationId WHERE tbl_order.OrderId = ' . $orderid);
+        // $email = $base_query->RegistrationEmail;
+        $name = $base_query->RegistrationName;
+        $data = [
+            [
+                'name' => 'NAME',
+                'content' => $name
+            ],
+            [
+                'name' => 'ORDERID',
+                'content' => $orderid
+            ]
+        ];
+        $attachments = [
+            [
+                'type' => 'application/pdf',
+                'name' => $orderid . '_invoice.pdf',
+                'content' => base64_encode(file_get_contents(dirname(dirname(__DIR__)) . '/invoices/' . $orderid . '_invoice.pdf')),
+            ]
+        ];
+        tbx_ajitem_order_invoice_mail($name, $email, $subject, $data, $attachments);
     }
     function tbx_order_export_PDF( Request $request, Response $response )
     {
@@ -827,41 +855,60 @@ function tbx_runner_insert_item( Request $request, Response $response )
         $body = $request->getParsedBody();
         $OrderId  = $request->getAttribute("orderid");
         $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
-        $Subject = "Order: " . $OrderId;
+        $subject = 'Order# ' . $OrderId . ' Invoice';
         $r = file_get_contents('http://staging.toolbx.com/admin/order/' . $OrderId . '/invoice');
-        $base_query = $db->get_row('SELECT tbl_registration.RegistrationEmail FROM tbl_registration JOIN tbl_order ON tbl_order.RegistrationId = tbl_registration.RegistrationId WHERE tbl_order.OrderId = ' . $OrderId);
+        $base_query = $db->get_row('SELECT tbl_registration.RegistrationName, tbl_registration.RegistrationEmail FROM tbl_registration JOIN tbl_order ON tbl_order.RegistrationId = tbl_registration.RegistrationId WHERE tbl_order.OrderId = ' . $OrderId);
         $email = $base_query->RegistrationEmail;
+        $name = $base_query->RegistrationName;
+        $data = [
+            [
+                'name' => 'NAME',
+                'content' => $name
+            ],
+            [
+                'name' => 'ORDERID',
+                'content' => $OrderId
+            ]
+        ];
+        $attachments = [
+            [
+                'type' => 'application/pdf',
+                'name' => $OrderId . '_invoice.pdf',
+                'content' => base64_encode(file_get_contents(dirname(dirname(__DIR__)) . '/invoices/' . $OrderId . '_invoice.pdf')),
+            ]
+        ];
+        tbx_ajitem_order_invoice_mail($name, $email, $subject, $data, $attachments);
       
-        $Message = 'Dear Toolbx User, <br/><br/> As per your request we are sending the order details in the attached PDF file. Please download the attachment and keep it for your record.<br/><br/> Thanks and Regards<br /><br />Toolbx Support Team';
-        try {
-            //Server settings
-            $mail->SMTPDebug = 0;                                 // Enable verbose debug output
-            $mail->isSMTP();                                      // Set mailer to use SMTP
-            $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-            $mail->SMTPAuth = true;                               // Enable SMTP authentication
-            $mail->Username = 'info@toolbx.com';                 // SMTP username
-            $mail->Password = 'Toolbx123';                           // SMTP password
-            $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-            $mail->Port = 587;                                    // TCP port to connect to
-            //Recipients
-            $mail->setFrom('info@mytoolbx.com', 'Toolbx Support');
-            $mail->addAddress($email);     // Add a recipient
-            //Content
-            $mail->isHTML(true);                                  // Set email format to HTML
-            $mail->Subject = $Subject;
-            $mail->Body    = $Message;
-            // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-            $mail->AddAttachment(dirname(dirname(__DIR__)) . '/invoices/' . $OrderId . '_invoice.pdf');
-            $mail->send();
-            // return 'Message has been sent';
-            // return true;
-            $res = array( 'message_code' => 1000, 'data_text' => 'Please check your email for order PDF.' );
-            return $response->withJson( $res, 200 );
-        } catch (Exception $e) {
-            echo 'Message could not be sent.';
-            echo 'Mailer Error: ' . $mail->ErrorInfo;
-            return false;
-        }
+        // $Message = 'Dear Toolbx User, <br/><br/> As per your request we are sending the order details in the attached PDF file. Please download the attachment and keep it for your record.<br/><br/> Thanks and Regards<br /><br />Toolbx Support Team';
+        // try {
+        //     //Server settings
+        //     $mail->SMTPDebug = 0;                                 // Enable verbose debug output
+        //     $mail->isSMTP();                                      // Set mailer to use SMTP
+        //     $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+        //     $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        //     $mail->Username = 'info@toolbx.com';                 // SMTP username
+        //     $mail->Password = 'Toolbx123';                           // SMTP password
+        //     $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        //     $mail->Port = 587;                                    // TCP port to connect to
+        //     //Recipients
+        //     $mail->setFrom('info@mytoolbx.com', 'Toolbx Support');
+        //     $mail->addAddress($email);     // Add a recipient
+        //     //Content
+        //     $mail->isHTML(true);                                  // Set email format to HTML
+        //     $mail->Subject = $Subject;
+        //     $mail->Body    = $Message;
+        //     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+        //     $mail->AddAttachment(dirname(dirname(__DIR__)) . '/invoices/' . $OrderId . '_invoice.pdf');
+        //     $mail->send();
+        //     // return 'Message has been sent';
+        //     // return true;
+        //     $res = array( 'message_code' => 1000, 'data_text' => 'Please check your email for order PDF.' );
+        //     return $response->withJson( $res, 200 );
+        // } catch (Exception $e) {
+        //     echo 'Message could not be sent.';
+        //     echo 'Mailer Error: ' . $mail->ErrorInfo;
+        //     return false;
+        // }
     }
     function tbx_order_status_words( Request $request, Response $response )
     {

@@ -141,6 +141,7 @@ function tbx_user_invitation( Request $request, Response $response )
 	else
 	{
 		$temp_pass = random_password();
+		$hash_pass = password_hash($temp_pass, PASSWORD_BCRYPT);
 		//echo $temp_pass;
 		//$password = password_hash( sha1( strtolower($email) . ':' . $temp_pass ), PASSWORD_BCRYPT );
 	
@@ -152,22 +153,19 @@ function tbx_user_invitation( Request $request, Response $response )
 		}
 		else
 		{
-
+			$owner_id = 0;
 			if ($company_name != "-")
 			{
-				//insert inbto compnay
-				// $base_query = 'INSERT INTO `tbl_companies`(CompanyName,CreatedBy,CreatedOn) VALUES ("'.$company_name.'", "1", "'.$createdon.'")';
-				// if($db->query($base_query))
-				// {
-				// 	$company_id = $db->insert_id;
-				// }
+				// insert inbto compnay
 				$company_id = $company_name;
+				$base_query = $db->get_row('SELECT RegistrationId FROM tbl_registration WHERE RegsitrationRoleId = 2 AND CompanyId = ' . $company_id);
+				$owner_id = $base_query->RegistrationId;
 
 			}
 			else
 				$company_id = -1;
 
-			$base_query = 'INSERT INTO tbl_registration (RegistrationName, RegistrationEmail, RegistrationPhoneNo, RegistrationPassword, RegsitrationRoleId, CompanyId, CreatedOn) VALUES("' . $name . '", "' . $email . '","' . $contact_no . '", "' . $temp_pass . '", "' . $role_id . '", "'.$company_id.'", "'.$createdon.'")';
+			$base_query = 'INSERT INTO tbl_registration (RegistrationName, RegistrationEmail, RegistrationPhoneNo, RegistrationPassword, RegsitrationRoleId, CompanyId, CreatedOn, CreatedBy) VALUES("' . $name . '", "' . $email . '","' . $contact_no . '", "' . $hash_pass . '", "' . $role_id . '", "'.$company_id.'", "'.$createdon.'", '.$owner_id.')';
 
 			if( $db->query( $base_query ) )
 			{ 
@@ -232,6 +230,7 @@ function tbx_user_owner_invitation( Request $request, Response $response )
 	else
 	{ 
 		$temp_pass = random_password();
+		$hash_pass = password_hash($temp_pass, PASSWORD_BCRYPT);
 		$count = $db->get_var('SELECT count(*) FROM `tbl_registration` WHERE LCASE(`RegistrationEmail`) = LCASE("' . $email . '") ');
 	
 		if( $count > 0 )
@@ -253,7 +252,7 @@ function tbx_user_owner_invitation( Request $request, Response $response )
 					$company_id = $db->insert_id;
 				}
 
-				$base_query = 'INSERT INTO tbl_registration (RegistrationName, RegistrationEmail, RegistrationPhoneNo, RegistrationPassword, RegsitrationRoleId, CompanyId, CreatedOn) VALUES("' . $name . '", "' . $email . '","' . $contact_no . '", "' . $temp_pass . '", "' . $role_id . '", "'.$company_id.'", "'.$createdon.'")';
+				$base_query = 'INSERT INTO tbl_registration (RegistrationName, RegistrationEmail, RegistrationPhoneNo, RegistrationPassword, RegsitrationRoleId, CompanyId, CreatedOn) VALUES("' . $name . '", "' . $email . '","' . $contact_no . '", "' . $hash_pass . '", "' . $role_id . '", "'.$company_id.'", "'.$createdon.'")';
 				
 				if( $db->query( $base_query ) )
 				{ 
@@ -322,6 +321,7 @@ function tbx_user_invitation_data( Request $request, Response $response )
 	else
 	{
 		$temp_pass = random_password();
+		$hash_pass = password_hash($temp_pass, PASSWORD_BCRYPT);
 		$base_query = $db->get_row('SELECT RegistrationId, RegistrationName, RegistrationEmail, RegistrationPhoneNo, RegsitrationRoleId, InvitationActivated, CompanyId FROM `tbl_registration` WHERE RegistrationId= ' . $user_id);
 		$base_query->RegistrationPassword = $temp_pass;
 
@@ -347,7 +347,7 @@ function tbx_user_forgotpassword( Request $request, Response $response )
 	$base_query = $db->get_row('SELECT IsDeleted FROM `tbl_registration` WHERE LCASE(RegistrationEmail)= LCASE("' . $email . '")' );
 	if(!$base_query )
 	{
-		$res = array( 'message_code' => 999, 'message_text' => 'This email address is not registred with ToolBx. Please contact administrator.');
+		$res = array( 'message_code' => 999, 'message_text' => 'This email address is not registered with ToolBx. Please contact administrator.');
 	}
 	else if($base_query->IsDeleted == "Y")
 	{
@@ -363,10 +363,11 @@ function tbx_user_forgotpassword( Request $request, Response $response )
 		else
 		{
 			$password = random_password();
+			$hash_pass = password_hash($password, PASSWORD_BCRYPT);
 			/*echo $password;
 			$new_password = password_hash( sha1( strtolower($email) . ':' . $password ), PASSWORD_BCRYPT );
 			echo $new_password;*/
-			$db->query( 'UPDATE tbl_registration SET  LastModifiedOn = "'.$lastmodified_on.'" ,TempPass =\'Y\', RegistrationPassword = "' . $password . '" WHERE RegistrationId = ' . $base_query->RegistrationId );
+			$db->query( 'UPDATE tbl_registration SET  LastModifiedOn = "'.$lastmodified_on.'" ,TempPass =\'Y\', RegistrationPassword = "' . $hash_pass . '" WHERE RegistrationId = ' . $base_query->RegistrationId );
 			send_password( $base_query->RegistrationName, $email, $password );
 			$res = array( 'message_code' => 1000, 'message_text' => 'Password reset successfully. New password is sent via email to you.');
 		}
@@ -385,6 +386,7 @@ function tbx_user_changepassword( Request $request, Response $response )
 	$user_id = $request->getAttribute('id');
 	$body = $request->getParsedBody();
 	$password = $body['password'];
+	$hash_pass = password_hash($password, PASSWORD_BCRYPT);
 
 	$lastmodified_on = date('Y-m-d H:i:s');
 
@@ -400,7 +402,7 @@ function tbx_user_changepassword( Request $request, Response $response )
     	else
     	{
     		//$new_password = password_hash( sha1( strtolower($email) . ':' . $password ), PASSWORD_BCRYPT );
-    		$db->query( 'UPDATE tbl_registration SET LastModifiedOn = "'.$lastmodified_on.'", TempPass =\'N\' , RegistrationPassword = "' . $password . '" WHERE RegistrationId = '. $base_query->RegistrationId );
+    		$db->query( 'UPDATE tbl_registration SET LastModifiedOn = "'.$lastmodified_on.'", TempPass =\'N\' , RegistrationPassword = "' . $hash_pass . '" WHERE RegistrationId = '. $base_query->RegistrationId );
     		$res = array( 'message_code' => 1000, 'message_text' => 'Password reset successfully.');
     	}
 	}
@@ -420,14 +422,15 @@ function tbx_user_profileresetpassword( Request $request, Response $response )
 	$user_id = $body['id'];
 	$old_password = $body["OldPassword"];
 	$new_password = $body["NewPassword"];
+	$hash_pass = password_hash($new_password, PASSWORD_BCRYPT);
 
 	$lastmodified_on = date('Y-m-d H:i:s');	
 
-	$base_query = $db->get_row('SELECT RegistrationId, RegistrationPassword FROM `tbl_registration` WHERE RegistrationPassword= "'.$old_password.'" AND RegistrationId=' . $user_id);
+	$base_query = $db->get_row('SELECT RegistrationId, RegistrationPassword FROM `tbl_registration` WHERE RegistrationId=' . $user_id);
 	
-	if($base_query )
+	if(password_verify($password, $base_query->RegistrationPassword))
 	{
-		$db->query( 'UPDATE tbl_registration SET LastModifiedOn = "'.$lastmodified_on.'", RegistrationPassword = "' . $new_password . '" WHERE RegistrationId = ' . $base_query->RegistrationId );
+		$db->query( 'UPDATE tbl_registration SET LastModifiedOn = "'.$lastmodified_on.'", RegistrationPassword = "' . $hash_pass . '" WHERE RegistrationId = ' . $base_query->RegistrationId );
 		$res = array( 'message_code' => 1000, 'message_text' => 'Password reset successfully.');
 	}
 	else
@@ -488,7 +491,7 @@ function tbx_user_profileresetpassword( Request $request, Response $response )
     	        $res = array( 'message_code' => 999, 'message_text' => 'This email address and mobile no. combination is deactivated by Toolbx Administrator. Please contact administrator.');
             else
             {
-        		if ($base_query->RegistrationPassword == $password) 
+        		if ( $base_query->TempPass == 'Y' || password_verify($password, $base_query->RegistrationPassword) ) 
         	   	{
         		  $base_query->token = generate_token( $base_query->RegistrationId);
         		  $base_query->RegistrationPassword = ""; 
@@ -814,15 +817,5 @@ function tbx_user_account_credit_details_update( Request $request, Response $res
     	}
     	return $response->withJson( $res, 200 );
     }
-    
-
-
-
-
-
-
-
-
-
 
 

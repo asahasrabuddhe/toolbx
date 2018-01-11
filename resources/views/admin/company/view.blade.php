@@ -22,12 +22,12 @@
                         <div class="col-sm-6 date" style="text-align: right;background:#EEEEEE;padding: 5px;">
                             <div class="col-sm-6 npl">
                                 <div class="input-group from">
-                                    <input class="form-control" id="from_date" name="fromDate" size="30" type="text" value="{{ date('M d, Y', strtotime('-7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="from_date_p" name="fromDate" size="30" type="text" value="{{ date('M d, Y', strtotime('-7 days')) }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                             <div class="col-sm-6 npr">
                                 <div class="input-group to">
-                                    <input class="form-control" id="to_date" name="toDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="form-control" id="to_date_p" name="toDate" size="30" type="text" value="{{ date('M d, Y') }}"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -238,6 +238,26 @@
                     tblPayment.draw();
                 }
             });
+            $('#from_date_p').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                maxDate: new Date,
+                onSelect: function(selectedDate){
+                    $('#to_date_p').datepicker('option', 'minDate', selectedDate);
+                    tblOrders.draw();
+                    tblPayment.draw();
+                }
+            });
+            $('#to_date_p').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'M d, yy',
+                onSelect: function() {
+                    tblOrders.draw();
+                    tblPayment.draw();
+                }
+            });
             $('.input-group-addon').on('click', function() {
                 $(this).parent().find('input').datepicker().focus();
             });
@@ -351,8 +371,8 @@
                     url: '{{ url('/company/' . Request::route('id') . '/payments')  }}',
                     type: 'get',
                     data: function(d) {
-                        d.fromDate = $('#from_date').val(),
-                        d.toDate = $('#to_date').val()
+                        d.fromDate = $('#from_date_p').val(),
+                        d.toDate = $('#to_date_p').val()
                     }
                 },
                 'columns': [
@@ -368,7 +388,7 @@
                     {
                         'data': 'TotalAmount',
                         'render': function( data, type, row, meta ) {
-                            return '$' + data;
+                            return '$' + ( parseFloat(data) / 100 );
                         }
                     }                    
                 ]

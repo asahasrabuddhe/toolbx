@@ -651,8 +651,8 @@ function tbx_product_json(Request $request, Response $response)
 	
 	//echo $sSQL . "<br/>";		
 	$result = $db->get_results( $sSQL );
-	$file = fopen( dirname( __DIR__ ) . '/product.json','w+');
-	//$file = fopen( '/var/www/html/toolbx/public/api/product.json','w+');
+	// unlink(dirname( __DIR__ ) . '/product.json');
+	$file = fopen( dirname( __DIR__ ) . '/product.json','w');
 
 	$flag = 0;
 	foreach($result as $product)

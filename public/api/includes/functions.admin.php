@@ -23,7 +23,7 @@ function tbx_admin_login( Request $request, Response $response )
 	{
 		
 		
-		if( $base_query->admin_password == $password)
+		if( password_verify($password, $base_query->admin_password) )
 		{  		
 			$base_query->admin_password = "";
 			$base_query->token = generate_token( $base_query->admin_id);
@@ -56,20 +56,17 @@ function tbx_admin_changepass( Request $request, Response $response )
 	$user_id = $body['id'];
 	$old_password = $body["old_password"];
 	$new_password = $body["new_password"];
+    $hash_pass = password_hash($new_password, PASSWORD_BCRYPT);
 
-	$base_query = $db->get_row('SELECT admin_id, admin_password FROM `tbl_administrator` WHERE admin_password = "'.$old_password.'" AND admin_id=' . $user_id);
+	$base_query = $db->get_row('SELECT admin_id, admin_password FROM `tbl_administrator` WHERE admin_id=' . $user_id);
 	
-	if(!$base_query)
+	if(!password_verify($old_password, $base_query->admin_password))
 	{
 		$res = array( 'message_code' => 999, 'message_text' => 'Invalid old password. Cannot update new password.');
 	}
-	else if($base_query->admin_password !== $old_password)
-	{
-		$res = array( 'message_code' => 999, 'message_text' => 'Invalid old password.');  
-	}
 	else
 	{
-		$db->query( 'UPDATE tbl_administrator SET admin_password = "' . $new_password . '" WHERE admin_id = ' . $base_query->admin_id );
+		$db->query( 'UPDATE tbl_administrator SET admin_password = "' . $hash_pass . '" WHERE admin_id = ' . $base_query->admin_id );
 		$res = array( 'message_code' => 1000, 'message_text' => 'Password reset successfully.');
 	}
 	
@@ -96,8 +93,9 @@ function tbx_admin_forgotpassword( Request $request, Response $response )
 	else
 	{
 		$password = random_password();
+        $hash_pass = password_hash($password, PASSWORD_BCRYPT);
 		
-		$db->query( 'UPDATE tbl_administrator SET admin_password = "' . $password . '" WHERE admin_id = ' . $base_query->admin_id );
+		$db->query( 'UPDATE tbl_administrator SET admin_password = "' . $hash_pass . '" WHERE admin_id = ' . $base_query->admin_id );
 		send_password( $base_query->admin_name, $email, $password );
 		$res = array( 'message_code' => 1000, 'message_text' => 'Password reset successfully. New password is sent via email to you.');
 	}

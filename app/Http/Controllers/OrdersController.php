@@ -154,84 +154,84 @@ class OrdersController extends Controller
             if( NULL !==  $request->query('ids') ) {
                 if( NULL !== $company ) {
                     $orders = DB::table('tbl_order')
-                                ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                ->where('tbl_order.display','Y')
-                                ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
-                                ->whereIn('tbl_order.OrderId', $ids)
-                                ->where('tbl_order.CompanyId', $company)
-                                ->groupBy('tbl_order.OrderId')
-                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                        ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->whereBetween('OrderDate', [$fromDate, $toDate])
+                        ->whereIn('tbl_order.OrderId', $ids)
+                        ->where('tbl_order.CompanyId', $company)
+                        ->groupBy('tbl_order.OrderId')
+                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
+
                 } else {
                     $orders = DB::table('tbl_order')
-                                ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                ->where('tbl_order.display','Y')
-                                ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
-                                ->whereIn('tbl_order.OrderId', $ids)
-                                ->groupBy('tbl_order.OrderId')
-                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                        ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->whereBetween('OrderDate', [$fromDate, $toDate])
+                        ->whereIn('tbl_order.OrderId', $ids)
+                        ->groupBy('tbl_order.OrderId')
+                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
                 }
             } else {
                 if( NULL !== $company) {
                     $orders = DB::table('tbl_order')
-                                ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                ->where('tbl_order.display','Y')
-                                ->where('tbl_order.CompanyId', $company)
-                                ->groupBy('tbl_order.OrderId')
-                                ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                        ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->whereBetween('OrderDate', [$fromDate, $toDate])
+                        ->where('tbl_order.CompanyId', $company)
+                        ->groupBy('tbl_order.OrderId')
+                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
                 } else {
                     $orders = DB::table('tbl_order')
-                                    ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                    ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                    ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                    ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                    ->leftJoin('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
-                                    ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                    ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                    ->where('tbl_order.display','Y')
-                                    ->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])
-                                ->groupBy('tbl_order.OrderId')
-                                    ->orderBy('tbl_order.OrderId', 'DESC')->get();
+                        ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->whereBetween('OrderDate', [$fromDate, $toDate])
+                        ->groupBy('tbl_order.OrderId')
+                        ->orderBy('tbl_order.OrderId', 'DESC')->get();
                 }
             }
         } else {
            if ( NULL != $company ) {
                  $orders = DB::table('tbl_order')
                         ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                ->where('tbl_order.display','Y')
-                                ->where('tbl_order.CompanyId', $company)
-                                ->groupBy('tbl_order.OrderId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->where('tbl_order.CompanyId', $company)
+                        ->groupBy('tbl_order.OrderId')
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
            } else {
                  $orders = DB::table('tbl_order')
                         ->leftJoin('tbl_jobsite', 'tbl_jobsite.JobSiteId', '=', 'tbl_order.JobSiteId')
-                                ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
-                                ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
-                                ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
-                                ->selectRaw('tbl_order.OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (tbl_order.TotalAmount - tbl_order.TaxAmount - tbl_order.DeliveryCharges) as SubTotal, tbl_order.DeliveryCharges, tbl_order.TaxAmount,  tbl_order.TotalAmount AS Total, MAX(tbl_notifications.OrderRating) AS OrderRating, MAX(tbl_notifications.id)')
-                                ->offset($start)->limit($length)
-                                ->where('tbl_order.display','Y')
-                                ->groupBy('tbl_order.OrderId')
+                        ->leftJoin('tbl_runner_order', 'tbl_runner_order.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_registration', 'tbl_registration.RegistrationId', '=', 'tbl_runner_order.RunnerId')
+                        ->leftJoin('tbl_notifications', 'tbl_notifications.OrderId', '=', 'tbl_order.OrderId')
+                        ->leftJoin('tbl_companies', 'tbl_order.CompanyId', '=', 'tbl_companies.CompanyId')
+                        ->selectRaw('CONCAT("TB-", 181110 + tbl_order.OrderId) AS OrderId, tbl_jobsite.JobSiteName, tbl_companies.CompanyName, ROUND(((SELECT SUM(tbl_order_details.Rate * (tbl_order_details.Quantity + (tbl_order_details.Quantity * 0.1))) from tbl_order_details WHERE tbl_order_details.OrderId IN (tbl_order.OrderId) AND tbl_order_details.Available <> -1) + tbl_order.TaxAmount + tbl_order.DeliveryCharges),2) AS TotalAmount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.OrderDate, GROUP_CONCAT(DISTINCT(tbl_registration.RegistrationName)) AS RunnerName, tbl_order.OrderDate, tbl_order.status, GROUP_CONCAT(DISTINCT(tbl_runner_order.RunnerId)) AS RunnerId, (CASE WHEN tbl_order.status = "PAID" AND tbl_order.Delivered = "Y" THEN "Delivered" WHEN tbl_order.status = "PAID" AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status IS NULL AND tbl_order.IsCancel = "Y" THEN "Cancelled" WHEN tbl_order.status = "PAID" AND tbl_order.IsLeaving="Y" THEN "In Process" WHEN tbl_order.status = "PAID" AND tbl_order.IsAccepted="Y" THEN "Accepted" WHEN tbl_order.status = "declined" THEN "Payment Declined" WHEN tbl_order.status IS NULL THEN "Pending" ELSE "Pending" END) as status, (CASE WHEN MAX(tbl_notifications.OrderRating) IS NULL THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) = 0 THEN "Not Rated" WHEN MAX(tbl_notifications.OrderRating) > 0 THEN MAX(tbl_notifications.OrderRating) END)AS OrderRating, MAX(tbl_notifications.id)')
+                        ->where( 'tbl_order.display','Y')
+                        ->groupBy('tbl_order.OrderId')
                         ->orderBy('tbl_order.OrderId', 'DESC')->get();
            }
         }
@@ -282,24 +282,6 @@ class OrdersController extends Controller
 
          return response()->json($data);
     }
-
-    // DEPRECATED 18/12/2017 - REMOVE AFTER 20/12/2017
-    // public function exportOrderPdf(Request $request, $id)
-    // {
-    //     $order_details = DB::table('tbl_order')
-    //                 ->join('tbl_order_details', 'tbl_order_details.OrderId', '=', 'tbl_order.OrderId')
-    //                 ->join('tbl_product', 'tbl_product.ProductId', '=', 'tbl_order_details.ProductId')
-    //                 ->select('tbl_product.ProductName', 'tbl_order_details.Quantity', 'tbl_order_details.Amount')
-    //                 ->where('tbl_order_details.Available', '<>', -1)
-    //                 ->where('tbl_order.OrderId', $id)
-    //                 ->get();
-
-    //     $view = View::make('admin.order.pdf', ['order_details_table' => $order_details]);
-        
-    //     $html = $view->render();
-
-    //     return PDF::loadHTML($html)->stream();
-    // }
 
     public function exportOrderPdfInvoice(Request $request, $id)
     {

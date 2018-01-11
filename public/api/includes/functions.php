@@ -49,13 +49,13 @@ function random_password( $length = 8 )
 function getOrderDetails($order_id)
 {
     $db = database();
-    $results = $db->get_results("SELECT tbl_product.ProductName, tbl_product.ProductImage, tbl_order_details.Quantity, tbl_order_details.Amount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, (tbl_order.TotalAmount - tbl_order.TaxAmount-tbl_order.DeliveryCharges) AS SubTotal, tbl_order.TotalAmount FROM `tbl_order_details` JOIN tbl_product ON tbl_order_details.ProductId = tbl_product.ProductId JOIN tbl_order ON tbl_order.OrderId = tbl_order_details.OrderId WHERE tbl_order_details.Available <> -1 AND tbl_order_details.OrderId =" . $order_id);
+    $results = $db->get_results("SELECT tbl_product.ProductName, tbl_product.ProductImage, tbl_order_details.Quantity, tbl_order_details.Rate, tbl_order_details.Amount, tbl_order.TaxAmount, tbl_order.DeliveryCharges, tbl_order.TotalAmount FROM `tbl_order_details` JOIN tbl_product ON tbl_order_details.ProductId = tbl_product.ProductId JOIN tbl_order ON tbl_order.OrderId = tbl_order_details.OrderId WHERE tbl_order_details.Available <> -1 AND tbl_order_details.OrderId = " . $order_id);
 
     $email = '';
     $total = 0;
 
     foreach($results as $result) {
-        $total += $result->Amount * $result->Quantity;
+        $total += $result->Rate * $result->Quantity;
     }
 
     foreach($results as $result) {
@@ -72,7 +72,7 @@ function getOrderDetails($order_id)
                         </div>
                     </td>
                     <td align="right" class="orders-list__price align-right" style="border-collapse:collapse;font-family:Arial, Helvetica, sans-serif !important;padding-top:16px;" valign="top" width="60">
-                        <span class="span" style="font-size: 17px; font-weight: bold; line-height: 20px;">$' . ($result->Amount + $result->Amount *  0.1) . '</span>
+                        <span class="span" style="font-size: 17px; font-weight: bold; line-height: 20px;">$' . sprintf("%.2f", round(($result->Amount + $result->Amount *  0.1),2)) . '</span>
                         <div class="text-gray" style="color:#9a9a9a !important;">
                             <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Arial, Helvetica, sans-serif !important;mso-table-lspace:0pt;mso-table-rspace:0pt;" width="100%">
                                 <tr>
@@ -92,18 +92,21 @@ function getOrderDetails($order_id)
                     </td>
                 </tr><!--————————————————————————————-->';
     }
+    $subtotal = round(($total + ($total * 0.1)),2);
+    $taxes = current($results)->TaxAmount;
+    $total = $subtotal + $taxes + current($results)->DeliveryCharges;
     return [ 
         'details' => $email,
-        'subtotal' => round(($total + ($total * 0.1)),2),
-        'total' => round(($total + ($total * 0.1) + current($results)->TaxAmount + current($results)->DeliveryCharges),2),
+        'subtotal' => sprintf("%.2f", $subtotal),
+        'total' => sprintf("%.2f", $total),
         'shipping' => current($results)->DeliveryCharges,
-        'taxes' => round(( ($total + ($total * 0.1)) * 0.13 ),2)
+        'taxes' => sprintf("%.2f", $taxes)
     ];
 }
 
 function send_order_email( $name, $email, $order_id )
 {
-    $subject = 'ToolBX - Order #' . $order_id;
+    $subject = 'ToolBX - Order #TB-' . (181110 + $order_id);
 
     $order_info = getOrderDetails($order_id);
 
@@ -114,7 +117,7 @@ function send_order_email( $name, $email, $order_id )
         ],
         [
             'name' => 'ORDERID',
-            'content' => $order_id
+            'content' => 'TB-' . (181110 + $order_id)
         ],
         [
             'name' => 'ORDERDETAILS',
@@ -155,41 +158,23 @@ function send_order_email( $name, $email, $order_id )
     ];
 
     return tbx_ajitem_order_mail($name, $email, $subject, $data);
-    // $to = $email;
-
-    // $subject = "ToolBX Order#" . $order_id;
-
-    // $message = "Dear " . $name . ", <br/><br/>";
-    // $message .= "Your order number " .$order_id . " has been placed. " . "<br/><br/>";
-
-    // $message .= "<br/><br/> Kind Regards,<br/><br/> ToolBX Admin <br/><br/>";
-
-    // return SendSMTPMailCommon($to, $subject, $message);
 }
 
 function send_order_cancel_email( $name, $email, $order_id )
 {
-    $subject = 'ToolBX - Order #' . $order_id;
+    $subject = 'ToolBX - Order #TB-' . (181110 + $order_id);
 
     $order_info = getOrderDetails($order_id);
 
     $data = [
-        // [
-        //     'name' => 'NAME',
-        //     'content' => $name
-        // ],
         [
             'name' => 'ORDERID',
-            'content' => $order_id
+            'content' => 'TB-' . (181110 + $order_id)
         ],
         [
             'name' => 'ORDERDETAILS',
             'content' => $order_info['details'],
         ],
-        // [
-        //     'name' => 'SUBTOTAL',
-        //     'content' => $order_info['subtotal'],
-        // ],
         [
             'name' => 'TAXES',
             'content' => $order_info['taxes'],
@@ -205,16 +190,6 @@ function send_order_cancel_email( $name, $email, $order_id )
     ];
 
     return tbx_ajitem_order_cancel_mail($name, $email, $subject, $data);
-    // $to = $email;
-
-    // $subject = "ToolBX Order#" . $order_id;
-
-    // $message = "Dear " . $name . ", <br/><br/>";
-    // $message .= "Your order number " .$order_id . " has been cancelled. " . "<br/><br/>";
-
-    // $message .= "<br/><br/> Kind Regards,<br/><br/> ToolBX Admin <br/><br/>";
-
-    // return SendSMTPMailCommon($to, $subject, $message);
 }
 
 //$$SL
@@ -230,51 +205,6 @@ function send_password( $name, $email, $password )
     ];
 
     return tbx_ajitem_reset_password_mail($name, $email, $subject, $data);
-	// $to = $email;
-	// $subject = "Your Password has been sent.";
-	// //$subject = "Your Password has been Reset.";
- 	
- // 	$message = "Dear " . $name . ",<br/><br/>";
-	// $message .= "Your new password is " . $password . "<br/><br/>";
-	
-	// $message .= "<br/><br/> Kind Regards,<br/><br/> ToolBX Admin <br/><br/>";
-	
-    // $headers = "";
-    // $headers .= "From: WIFI Metropolis <sitename@hostname.com> <br/>";
-    // $headers .= "Reply-To:" . $from . "<br/>" ."X-Mailer: PHP/" . phpversion();
-    // $headers .= 'MIME-Version: 1.0' . "<br/>";
-    // $headers .= 'Content-type: text/html; charset=iso-8859-1' . "<br/>";   
-
-	/*ini_set('smtp_host','mail.applinktest.in');
-	ini_set('smtp_user','Support@applinktest.in');
-	ini_set('smtp_pass','uIysicr0Hg2t'); */
-	
-	
-    // 	ini_set('SMTP','mail.applinktest.in');
-    // 	ini_set('sendmail_from','Support@applinktest.in');
-    // 	//ini_set('smtp_user','Support@applinktest.in');
-    // 	//ini_set('smtp_pass','uIysicr0Hg2t');
-    // 	ini_set('username','Support@applinktest.in');
-    // 	ini_set('password','uIysicr0Hg2t');
-    // 	ini_set('smtp_port',25);
-
-	//$result = mail( $to, $subject, $message, $header);
-	
-	//$from_email = "ToolBx Admin";
-    //mail( $to, $subject, $message , "", "-f$from_email");
-
-    return SendSMTPMailCommon($to, $subject, $message);
-    
-    /*if($data)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }*/
-
-    
 }
 
 function sendConfirmationMail( $name, $email )
@@ -290,67 +220,8 @@ function sendConfirmationMail( $name, $email )
     ];
 
     return tbx_ajitem_confirmation_mail($name, $email, $subject, $data);
-		// $to = $email;
-		// $subject = "Welcome to ToolBx!";
-         
-		// $message = "Dear " . $name . ",<br /><br/><br /><br/>";
-		// $message .= "Your registration is now complete. Please login with your email address and password and enjoy the app.<br/><br/><br /><br/> Thanks and Regards <br /><br/> Mammaalert Admin";
-         
-		// $header = "From:ToolBX Admin <support@toolbx.com> <br/>";
-		// $header .= "MIME-Version: 1.0<br/>";
-		// $header .= "Content-type: text/html<br/>";
-		//ini_set('smtp_user','mallika@giftjeenie.com');
-		//ini_set('smtp_pass','Makhijani07');
-		
-		
-		ini_set('smtp_host','mail.applinktest.in');
-		ini_set('smtp_user','Support@applinktest.in');
-		ini_set('smtp_pass','uIysicr0Hg2t');
-		
- 	
-		$result = mail( $to, $subject, $message, $header );
 }
 
-
-// function send_confirmation_mail( $name, $email )
-// {
-// 	$to = $email;
-// 	$subject = "Welcome to NuVO!";
-     
-// 	$message = "Dear " . $name . ",<br /><br/>";
-// 	$message .= "Your registration is now complete.<br/>";
-     
-// 	$header = "From:ajitem@joshiinc.com <br/>";
-// 	//$header .= "Cc:afgh@somedomain.com <br/>";
-// 	$header .= "MIME-Version: 1.0<br/>";
-// 	$header .= "Content-type: text/html<br/>";
-
-// 	ini_set('smtp_host','mail.applinktest.in');	
-// 	ini_set('smtp_user','Support@applinktest.in');
-// 	ini_set('smtp_pass','uIysicr0Hg2t');
-// 	$result = mail( $to, $subject, $message, $header );
-// }
-
-
-
-// function send_verification_mail( $url,$name,$email,$user_key )
-// {
-// 	$to = $email;
-// 	$subject = "Welcome to Mammalert!";
-     
-// 	$message = "Dear " . $name . ",<br /><br/>";
-// 	$message .= "Your registration is now completed, To verify your email address please click here. <br/>";
-// 	$message .= "http://mammalert.theapptest.xyz/user/verify/".$user_key;
-     
-// 	$header = "From:Mammaalert Admin <support@mammaalert.com> <br/>";
-// 	$header .= "MIME-Version: 1.0<br/>";
-// 	$header .= "Content-type: text/html<br/>";
-
-// 	ini_set('smtp_host','mail.applinktest.in');
-// 	ini_set('smtp_user','Support@applinktest.in');
-// 	ini_set('smtp_pass','uIysicr0Hg2t');
-// 	$result = mail( $to, $subject, $message, $header );
-// }
 
 
 //$$SL
@@ -370,38 +241,6 @@ function send_invitation_mail( $url, $email, $user_id, $name, $temp_pass)
     ];
 
     return tbx_ajitem_invitation_mail($name, $email, $subject, $data);
-	// $to = $email;
-	// $subject = "Welcome to ToolBX!";
-     
-	// $message = "Dear " . $name . ",<br/><br/>";
-	// $message .= "You are invited to ToolBX app. Please join the app using following link<br/><br/><br/>";
-	// $message .= $url;
-	// $message .= "<br/><br/>Kind Regards,<br/>ToolBX Admin<br/><br/><br/>";
-	
-     
-	/*$header = "From:ToolBX Admin <support@toolbx.com>";
-	$header .= "MIME-Version: 1.0";
-	$header .= "Content-type: text/html";*/
-
-    // 	ini_set('SMTP','mail.applinktest.in');
-    // 	ini_set('sendmail_from','Support@applinktest.in');
-    // 	//ini_set('smtp_user','Support@applinktest.in');
-    // 	//ini_set('smtp_pass','uIysicr0Hg2t');
-    // 	ini_set('username','Support@applinktest.in');
-    // 	ini_set('password','uIysicr0Hg2t');
-    // 	ini_set('smtp_port',25);
-	
-	
-	//mail( $to, $subject, $message, $header);
-	//mail( $to, $subject, $message);
-	
-	//$from_email = "ToolBx Admin";
-    //mail( $to, $subject, $message , "", "-f$from_email");
-
-    return SendSMTPMailCommon($to,$subject,$message);
-    
-	
-	
 }
 
 function get_current_user_id( $request )
@@ -525,7 +364,7 @@ function generate_branch_link($user_id)
         'data' => [
         	'user_id' => $user_id,
             //'$desktop_url'=>'http://toolbx.applinktest.in',
-            '$desktop_url'=>'http://toolbx.applabb.ca',
+            '$desktop_url'=>'https://itunes.apple.com/ca/app/keynote/id1320999107?mt=8',
             '$ios_url'=>'toolbx://',
             '$ipad_url'=>'toolbx://',
             '$android_url'=>'toolbx://']
@@ -713,7 +552,15 @@ if (!function_exists('str_putcsv')) {
 function tbx_app_status(Request $request, Response $response) 
 {
     $parameters = $request->getParams();
-    $objTimeZone = new DateTimeZone($parameters['timezone']);
+
+    if(null !== $parameters['dev'] && $parameters['dev'] == true) {
+        return $response->withJson([
+            'status' => true,
+        ], 200);
+    }
+    // $objTimeZone = new DateTimeZone($parameters['timezone']);
+    $objTimeZone = new DateTimeZone('America/Toronto');
+
 
     $objStartTime = new DateTime("now", $objTimeZone);
     $objStartTime->setTime(07,00);

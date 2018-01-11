@@ -191,9 +191,10 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
                         $data = send_notification($registration_ids, $message);
                         $res = array('message_code' => 1000, 'message_text' => $data);
-        			
-        			   tbx_order_export_PDF_invoice($order_id, $result_trj1->RegistrationEmail);
+     			
+        			 tbx_order_export_PDF_invoice($order_id, $result_trj->RegistrationEmail);
                     
+
         			
         			/************************************************************/
         			

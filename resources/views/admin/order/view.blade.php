@@ -27,9 +27,14 @@
                             <a href="{{ url('/admin/order/' . Request::route('id') . '/export') }}" style="text-decoration: none;" target="_blank">+ EXPORT</a>
                         </div>
                     </div>
+                    @php
+                        $sub_total = round( ( $order_details->TotalAmount + ( $order_details->TotalAmount * 0.1 ) ) , 2 );
+                        // $hst = round ( ( ( $order_details->TotalAmount + $order_details->DeliveryCharges + ( ($order_details->TotalAmount + $order_details->DeliveryCharges) * 0.1 ) ) * 0.13 ), 2 );
+                        $total = $sub_total + $order_details->TaxAmount + $order_details->DeliveryCharges;
+                    @endphp
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>ORDER NUMBER</label> <span>{{ $order_details->OrderId }}</span>
+                            <label>ORDER NUMBER</label> <span>{{ 'TB-' . (181110 + $order_details->OrderId) }}</span>
                         </div>
                         <div class="col-sm-3">
                             <label>JOB SITE ADDRESS</label> <span>{{ $order_details->Address or '-' }}</span>
@@ -43,16 +48,16 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>SUB TOTAL</label> <span>${{ number_format ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1), 2) }}</span>
+                            <label>SUB TOTAL</label> <span>${{ $sub_total }}</span>
                         </div>
                         <div class="col-sm-3">
-                            <label>HST</label> <span>${{ number_format (( ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1)) * 0.13), 2) }}</span>
+                            <label>HST</label> <span>${{ $order_details->TaxAmount }}</span>
                         </div>
                         <div class="col-sm-3">
                             <label>DELIVERY FEE</label> <span>${{ $order_details->DeliveryCharges }}</span>
                         </div>
                         <div class="col-sm-3">
-                            <label>TOTAL</label> <span>${{ number_format($order_details->TotalAmount + ($order_details->TotalAmount * 0.1) + number_format (( ($order_details->TotalAmount + ($order_details->TotalAmount * 0.1)) * 0.13), 2) +  $order_details->DeliveryCharges, 2) }}</span>
+                            <label>TOTAL</label> <span>${{ sprintf("%.2f", $total) }}</span>
                         </div>
                     </div>
                     <table class="table" id="users">

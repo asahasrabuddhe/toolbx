@@ -19,6 +19,9 @@
             <div class="content" id="myDiv">
                 <div class="data-table table-responsive">
                     <h4><img onclick="window.location.assign('{{ url('/admin/user/list_users') }}')" src="{{ asset('/images/arrow_16.png') }}" style="cursor: pointer;"> <label>HOME</label></h4>
+                    @if(Session::has('success_msg'))
+                    <p class="alert">{{ Session::get('success_msg') }}</p>
+                    @endif
                     <form class="top-form" id="top_form1" action="{{ url('/admin/change_password') }}" method="POST">
                     	{{ csrf_field() }}
                         <div class="col-sm-9" style="background-color:#ffffff;">

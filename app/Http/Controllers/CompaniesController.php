@@ -257,8 +257,8 @@ class CompaniesController extends Controller
         $start = $request->get('start');
         $length = $request->get('length');
 
-        $fromDate = date('Y:m:d H:i:s', strtotime($request->get('fromDate')));
-        $toDate = date('Y:m:d H:i:s', strtotime($request->get('toDate')));
+        $fromDate = date('Y-m-d', strtotime($request->query('fromDate'))) . ' 00:00:01';
+        $toDate = date('Y-m-d', strtotime($request->query('toDate'))) . ' 23:59:59';
 
         $total = DB::table('tbl_order')->join('tbl_payments', 'tbl_payments.OrderId', 'tbl_order.OrderId')->where('tbl_order.CompanyId',$id)->whereBetween('tbl_order.OrderDate', [$fromDate, $toDate])->count();
 
