@@ -7,7 +7,7 @@
     "require": {
         "php": ">=7.0.0",
         "barryvdh/laravel-snappy": "^0.4.0",
-        "dompdf/dompdf": "^0.8.1",
+        "dompdf/dompdf": "^1.0.0",
         "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "^6.3",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",
